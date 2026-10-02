@@ -71,14 +71,14 @@ There is also **Marstek - Veiligheid** (safety): a safety net that restores the 
 
 ### What is needed for what
 
-| Component | Zonneplan | Marstek Modbus | P1 meter | Solar panels | Solcast | Helpers | Cards |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Marstek - Opladen / Ontladen | | ✅ | | | | | |
-| Charge at lowest price | ✅ | ✅ | | ✅ | | ✅ | |
-| Discharge at highest price | ✅ | ✅ | | | | ✅ | |
-| Marstek - Veiligheid (safety) | | ✅ | | | | | |
-| Air conditioning temperature and humidity | | | | | | | |
-| Energy dashboard | ✅ | ✅ | ✅ | ✅ | optional | ✅ | ✅ |
+| Component | Zonneplan | Marstek Modbus | P1 meter | Solar panels | Solcast | Helpers |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Marstek - Opladen / Ontladen | | ✅ | | | | |
+| Charge at lowest price | ✅ | ✅ | | ✅ | | ✅ |
+| Discharge at highest price | ✅ | ✅ | | | | ✅ |
+| Marstek - Veiligheid (safety) | | ✅ | | | | |
+| Air conditioning temperature and humidity | | | | | | |
+| Energy dashboard | ✅ | ✅ | ✅ | ✅ | optional | ✅ |
 
 The air conditioning blueprint only needs an air conditioner (`climate` entity) and a temperature and humidity sensor.
 
