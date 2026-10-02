@@ -16,6 +16,7 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
 | [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
+| [`energie_helpers.yaml`](energie_helpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
 
 ---
 
@@ -162,6 +163,27 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 - [B2500D Card](https://github.com/Neisi/b2500d-card)
 - [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 - [ApexCharts Card](https://github.com/RomRider/apexcharts-card)
+
+### Benodigde helpers
+
+Het dashboard gebruikt een aantal eigen template-sensoren. Die staan in [`energie_helpers.yaml`](energie_helpers.yaml):
+
+| Sensor | Gebruikt voor |
+|---|---|
+| `sensor.zplan_laagste_tarief_vandaag`, `sensor.zplan_tijdstip_laagste_tarief` | Kaart met het goedkoopste uur |
+| `sensor.zplan_hoogste_tarief_vandaag`, `sensor.zplan_tijdstip_hoogste_tarief` | Kaart met het duurste uur |
+| `sensor.marstek_total_ac_power` | Actuele ontlaad en grafiek |
+| `sensor.marstek_total_stored_energy` | Opgeslagen |
+| `sensor.marstek_total_discharging_energy_today` | Dagelijks ontladen |
+| `sensor.marstek_average_battery_soc` | De stroomprijs-blueprints |
+| `sensor.zonne_zelfverbruik_percentage` | Zelfverbruik |
+| `sensor.meterkast_belasting` | Meterkast belasting (stel `max_vermogen` in op je aansluiting) |
+
+Zet het bestand in je `packages`-map, of kopieer de sensoren naar je `configuration.yaml`, en herlaad via **Ontwikkelhulpmiddelen → YAML → Template-entiteiten**.
+
+### Energie-dashboard van Home Assistant
+
+De kaarten *Verbruik per bron*, *Energiegebruik*, *Energieverdeling* en *Verwachte zon* gebruiken de gegevens van het ingebouwde Energie-dashboard. Stel dat eerst in via **Instellingen → Dashboards → Energie** (net, zonnepanelen en batterij), anders blijven deze kaarten leeg.
 
 ### Installeren
 
