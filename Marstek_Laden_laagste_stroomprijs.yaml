@@ -2,9 +2,7 @@ blueprint:
   name: Marstek - Laden bij laagste stroomprijs
   description: |
     Start het laden van de Marstek-batterij op het goedkoopste uur van de dag.
-
     De automation controleert bij elke prijswijziging of:
-
     - het huidige uur het goedkoopste uur van vandaag is;
     - de batterij onder de 60% zit;
     - de zonnepanelen minder dan 1000 W leveren;
