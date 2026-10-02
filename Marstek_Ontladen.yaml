@@ -62,17 +62,17 @@ blueprint:
     discharge_power_value:
       name: Ontlaadvermogen per batterij
       description: >-
-        Met hoeveel watt elke batterij ontlaadt. Standaard 2500 W, het
-        maximum van een Marstek Venus E. Kies een lagere waarde als je
-        aansluiting of batterij minder aankan.
+        Met hoeveel watt elke batterij ontlaadt. Standaard 2500 W. Vul het
+        vermogen in dat jouw batterij en aansluiting aankunnen; kijk in de
+        specificaties van je batterij voor het maximum.
       default: 2500
       selector:
         number:
           min: 100
-          max: 2500
+          max: 10000
           step: 50
           unit_of_measurement: W
-          mode: slider
+          mode: box
     discharge_duration:
       name: Ontlaadduur
       description: >-

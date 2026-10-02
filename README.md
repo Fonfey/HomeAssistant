@@ -110,12 +110,12 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 | Werkmodus | `select.marstek_1_user_work_mode` |
 | RS485-besturing | `switch.marstek_venus_modbus_rs485_control_mode` |
 | Laadvermogen-entiteiten | `number.marstek_venus_modbus_set_charge_power` |
-| Laadvermogen per batterij | Standaard 2500 W (100–2500 W) |
+| Laadvermogen per batterij | Standaard 2500 W, zelf in te vullen |
 | Laadduur | Standaard 1 uur |
 
 **Laad- en ontlaadvermogen kiezen**
 
-Het vermogen geldt *per batterij*. Met twee batterijen op 2500 W vraag je dus 5000 W van je aansluiting. Bij een 1x35A-aansluiting (max. 8050 W) blijft er dan weinig ruimte over voor de rest van het huis. Kies een lagere waarde als je aansluiting dat niet aankan, of als je rustiger wilt laden. Gebruik de sensor [Meterkast belasting](#meterkast-belasting) om dit in de gaten te houden.
+Het vermogen geldt *per batterij*. Met twee batterijen op 2500 W vraag je dus 5000 W van je aansluiting. Bij een 1x35A-aansluiting (max. 8050 W) blijft er dan weinig ruimte over voor de rest van het huis. Vul nooit meer in dan je batterij aankan (kijk in de specificaties; een Marstek Venus E kan maximaal 2500 W), en kies een lagere waarde als je aansluiting dat niet aankan of als je rustiger wilt laden. Gebruik de sensor [Meterkast belasting](#meterkast-belasting) om dit in de gaten te houden.
 
 ## Marstek - Ontladen
 
@@ -127,7 +127,7 @@ Werkt hetzelfde als *Opladen*, maar zet de batterijen op *discharge* met het ing
 | Werkmodus | `select.marstek_1_user_work_mode` |
 | RS485-besturing | `switch.marstek_venus_modbus_rs485_control_mode` |
 | Ontlaadvermogen-entiteiten | `number.marstek_venus_modbus_set_discharge_power` |
-| Ontlaadvermogen per batterij | Standaard 2500 W (100–2500 W) |
+| Ontlaadvermogen per batterij | Standaard 2500 W, zelf in te vullen |
 | Ontlaadduur | Standaard 1 uur |
 
 ## Marstek - Laden bij laagste stroomprijs
