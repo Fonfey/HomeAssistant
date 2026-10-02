@@ -1,0 +1,196 @@
+# =====================================================================
+# Helpers voor het Energie-dashboard en de Marstek-blueprints
+# Bron: https://github.com/Fonfey/HomeAssistant
+# =====================================================================
+#
+# GEBRUIK
+#   Optie 1: Zet dit bestand in de map "packages" (bijv. packages/energie_helpers.yaml)
+#            en zorg dat packages aan staan in configuration.yaml:
+#              homeassistant:
+#                packages: !include_dir_named packages
+#   Optie 2: Kopieer de sensoren onder "template:" naar je eigen configuration.yaml.
+#            Heb je daar al een "template:"-sectie, voeg ze dan daaraan toe.
+#
+#   Herlaad daarna: Ontwikkelhulpmiddelen → YAML → Template-entiteiten.
+#
+# BENODIGDE ENTITEITEN
+#   sensor.zonneplan_current_electricity_tariff   (Zonneplan ONE-integratie)
+#   sensor.marstek_1_ac_power / sensor.marstek_2_ac_power
+#   sensor.marstek_1_battery_soc / sensor.marstek_2_battery_soc
+#   sensor.marstek_1_stored_energy / sensor.marstek_2_stored_energy
+#   sensor.marstek_venus_modbus_daily_discharging_energy (en _2)
+#   sensor.pv_power                               (vermogen zonnepanelen, W)
+#   sensor.p1_meter_vermogen                      (vermogen P1-meter, W; negatief = teruglevering)
+#
+# Heb je maar één batterij? Haal dan de regels met "_2" / "marstek_2" weg
+# en deel de gemiddelde SoC niet door 2.
+# =====================================================================
+
+template:
+  - sensor:
+      # ---------------------------------------------------------------
+      # Zonneplan: laagste en hoogste tarief van vandaag
+      # Gebruikt door de kaarten met de pijl omlaag / omhoog.
+      # Zonneplan geeft de forecast-prijzen in 1/10.000.000 euro.
+      # ---------------------------------------------------------------
+      - name: "ZPlan Hoogste Tarief Vandaag"
+        unit_of_measurement: "€/kWh"
+        state: >
+          {% set forecast = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') %}
+          {% if forecast %}
+            {# Filter alleen vandaag #}
+            {% set today = now().strftime('%Y-%m-%d') %}
+            {% set today_prices = forecast | selectattr('datetime', 'search', today) | map(attribute='electricity_price') | list %}
+            {% if today_prices %}
+              {# Delen door 10.000.000 om van de Zonneplan-waarde naar Euro's te gaan #}
+              {{ (today_prices | max / 10000000) | round(3) }}
+            {% else %}
+              unavailable
+            {% endif %}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "ZPlan Laagste Tarief Vandaag"
+        unit_of_measurement: "€/kWh"
+        state: >
+          {% set forecast = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') %}
+          {% if forecast %}
+            {# Filter alleen vandaag #}
+            {% set today = now().strftime('%Y-%m-%d') %}
+            {% set today_prices = forecast | selectattr('datetime', 'search', today) | map(attribute='electricity_price') | list %}
+            {% if today_prices %}
+              {# Delen door 10.000.000 om van de Zonneplan-waarde naar Euro's te gaan #}
+              {{ (today_prices | min / 10000000) | round(4) }}
+            {% else %}
+              unavailable
+            {% endif %}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "ZPlan Tijdstip Hoogste Tarief"
+        state: >
+          {% set forecast = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') %}
+          {% if forecast %}
+            {% set today = now().strftime('%Y-%m-%d') %}
+            {% set today_forecast = forecast | selectattr('datetime', 'search', today) | list %}
+            {% if today_forecast %}
+              {% set max_price = today_forecast | map(attribute='electricity_price') | list | max %}
+              {% set max_item = today_forecast | selectattr('electricity_price', 'ge', max_price) | first %}
+              {{ as_timestamp(max_item.datetime) | timestamp_custom('%H:%M') }}
+            {% else %}
+              unavailable
+            {% endif %}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      - name: "ZPlan Tijdstip Laagste Tarief"
+        state: >
+          {% set forecast = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') %}
+          {% if forecast %}
+            {% set today = now().strftime('%Y-%m-%d') %}
+            {% set today_forecast = forecast | selectattr('datetime', 'search', today) | list %}
+            {% if today_forecast %}
+              {% set min_price = today_forecast | map(attribute='electricity_price') | list | min %}
+              {% set min_item = today_forecast | selectattr('electricity_price', 'le', min_price) | first %}
+              {{ as_timestamp(min_item.datetime) | timestamp_custom('%H:%M') }}
+            {% else %}
+              unavailable
+            {% endif %}
+          {% else %}
+            unavailable
+          {% endif %}
+
+      # ---------------------------------------------------------------
+      # Marstek: totalen van beide batterijen
+      # ---------------------------------------------------------------
+      - name: "Marstek Total AC Power"
+        unique_id: marstek_total_ac_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{
+            (
+              (states('sensor.marstek_1_ac_power') | float(0)) +
+              (states('sensor.marstek_2_ac_power') | float(0))
+            ) | round(0)
+          }}
+
+      # Gebruikt door de blueprints "Laden bij laagste stroomprijs"
+      # en "Ontladen bij hoogste stroomprijs".
+      - name: "Marstek Average Battery SoC"
+        unique_id: marstek_average_battery_soc
+        unit_of_measurement: "%"
+        device_class: battery
+        state_class: measurement
+        state: >
+          {{
+            (
+              (
+                (states('sensor.marstek_1_battery_soc') | float(0)) +
+                (states('sensor.marstek_2_battery_soc') | float(0))
+              ) / 2
+            ) | round(1)
+          }}
+
+      - name: "Marstek Total Stored Energy"
+        unique_id: marstek_total_stored_energy
+        unit_of_measurement: "kWh"
+        device_class: energy_storage
+        state_class: measurement
+        state: >
+          {{
+            (
+              (states('sensor.marstek_1_stored_energy') | float(0)) +
+              (states('sensor.marstek_2_stored_energy') | float(0))
+            ) | round(2)
+          }}
+
+      - name: "Marstek Total Discharging Energy Today"
+        unique_id: marstek_total_discharging_energy_today
+        unit_of_measurement: "kWh"
+        device_class: energy
+        state_class: total_increasing
+        state: >
+          {{
+            (
+              (states('sensor.marstek_venus_modbus_daily_discharging_energy') | float(0)) +
+              (states('sensor.marstek_venus_modbus_daily_discharging_energy_2') | float(0))
+            ) | round(2)
+          }}
+
+      # ---------------------------------------------------------------
+      # Zelfverbruik: welk deel van de huidige zonne-opbrengst je zelf
+      # gebruikt (de rest wordt teruggeleverd). Kaart "Zelfverbruik".
+      # ---------------------------------------------------------------
+      - name: "Zonne zelfverbruik percentage"
+        unique_id: zonne_zelfverbruik_percentage
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set pv = states('sensor.pv_power') | float(0) %}
+          {% set grid = states('sensor.p1_meter_vermogen') | float(0) %}
+          {% set export_power = -grid if grid < 0 else 0 %}
+          {% if pv > 0 %}
+            {% set pct = ((pv - export_power) / pv) * 100 %}
+            {{ [[pct, 0] | max, 100] | min | round(1) }}
+          {% else %}
+            0
+          {% endif %}
+
+      # ---------------------------------------------------------------
+      # Meterkast belasting: huidig netvermogen als percentage van de
+      # maximale capaciteit van je aansluiting. Kaart "Meterkast belasting".
+      # PAS AAN: max_vermogen = fases x ampere x 230 V
+      #   1x35A = 8050 W  |  3x25A = 17250 W
+      # ---------------------------------------------------------------
+      - name: "Meterkast Belasting"
+        unique_id: meterkast_belasting
+        unit_of_measurement: "%"
+        state: >
+          {% set max_vermogen = 8050 %}
+          {% set vermogen = states('sensor.p1_meter_vermogen') | float(0) | abs %}
+          {{ ((vermogen / max_vermogen) * 100) | round(2) }}
