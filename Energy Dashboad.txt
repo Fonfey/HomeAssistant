@@ -57,7 +57,6 @@
 # Bron: https://github.com/Fonfey/HomeAssistant
 # =====================================================================
 
-title: Energie
 views:
   - type: sections
     max_columns: 3
@@ -70,15 +69,16 @@ views:
           - type: custom:mushroom-template-card
             primary: Actuele prijs
             secondary: >
-              {{ states('sensor.zonneplan_current_electricity_tariff') | float(0) |
-              round(3) }} €/kWh
+              {{ states('sensor.zonneplan_current_electricity_tariff') |
+              float(0) | round(3) }} €/kWh
             icon: mdi:cash-check
             grid_options:
               columns: 6
               rows: 1
             color: >
-              {% set prijs = states('sensor.zonneplan_current_electricity_tariff') |
-              float(0) %} {% if prijs < 0.20 %}
+              {% set prijs =
+              states('sensor.zonneplan_current_electricity_tariff') | float(0)
+              %} {% if prijs < 0.20 %}
                 green
               {% elif prijs < 0.45 %}
                 orange
@@ -87,20 +87,22 @@ views:
               {% endif %}
             features_position: inline
           - type: custom:mushroom-template-card
-            primary: >-
-              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price < ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ ns.t.strftime('%H:%M') if ns.t else '-' }}
-            secondary: >-
-              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price < ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ '%.4f' | format(ns.p / 10000000) if ns.p is not none else '-' }} €/kWh
+            primary: |
+              {{ states('sensor.zplan_tijdstip_laagste_tarief') }}
+            secondary: >
+              {{ '%.4f' | format(states('sensor.zplan_laagste_tarief_vandaag') |
+              float(0)) }} €/kWh
             icon: mdi:trending-down
             icon_color: green
             grid_options:
               columns: 6
               rows: 1
           - type: custom:mushroom-template-card
-            primary: >-
-              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price > ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ ns.t.strftime('%H:%M') if ns.t else '-' }}
-            secondary: >-
-              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price > ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ '%.4f' | format(ns.p / 10000000) if ns.p is not none else '-' }} €/kWh
+            primary: |
+              {{ states('sensor.zplan_tijdstip_hoogste_tarief') }}
+            secondary: >
+              {{ '%.4f' | format(states('sensor.zplan_hoogste_tarief_vandaag') |
+              float(0)) }} €/kWh
             icon: mdi:trending-up
             icon_color: red
             grid_options:
@@ -121,7 +123,6 @@ views:
               columns: 3
               rows: auto
             icon: mdi:battery-plus-outline
-            name: Opladen
           - show_name: true
             show_icon: true
             type: button
@@ -137,7 +138,6 @@ views:
               columns: 3
               rows: auto
             icon: mdi:battery-minus
-            name: Ontladen
           - output: true
             battery: true
             production: true
@@ -184,7 +184,7 @@ views:
             entity: sensor.marstek_total_stored_energy
             name: Opgeslagen
             icon: mdi:battery-high
-            unit: kWh
+            unit: kW
             decimal: 2
             max_value: 10.24
             custom_theme:
@@ -206,7 +206,7 @@ views:
             entity: sensor.marstek_total_discharging_energy_today
             name: Dagelijks Ontladen
             icon: mdi:battery-arrow-down
-            unit: kWh
+            unit: kW
             decimal: 2
             max_value: 10.24
             custom_theme:
@@ -383,3 +383,4 @@ views:
     cards: []
     dense_section_placement: true
     badges: []
+
