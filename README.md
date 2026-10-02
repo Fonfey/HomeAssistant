@@ -16,7 +16,7 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
 | [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
-| [`energie_helpers.yaml`](energie_helpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
+| [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
 
 ---
 
@@ -166,7 +166,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 
 ### Benodigde helpers
 
-Het dashboard gebruikt een aantal eigen template-sensoren. Die staan in [`energie_helpers.yaml`](energie_helpers.yaml):
+Het dashboard gebruikt een aantal eigen template-sensoren. Die staan in [`EnergyHelpers.yaml`](EnergyHelpers.yaml):
 
 | Sensor | Gebruikt voor |
 |---|---|
