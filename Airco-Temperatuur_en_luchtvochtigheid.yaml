@@ -15,8 +15,7 @@ blueprint:
     climate_entity:
       name: Airco
       description: >-
-        De airco die geregeld wordt, bijvoorbeeld
-        `climate.slaapkamer`.
+        De airco die geregeld wordt.
       selector:
         entity:
           filter:
@@ -24,8 +23,7 @@ blueprint:
     temperature_sensor:
       name: Temperatuursensor
       description: >-
-        De sensor met de temperatuur in de kamer, bijvoorbeeld
-        `sensor.slaapkamer_temperatuur`. Op basis hiervan wordt gekozen
+        De sensor met de temperatuur in de kamer. Op basis hiervan wordt gekozen
         tussen koelen, verwarmen of de luchtvochtigheid regelen.
       selector:
         entity:
@@ -34,8 +32,7 @@ blueprint:
     humidity_sensor:
       name: Luchtvochtigheidssensor
       description: >-
-        De sensor met de luchtvochtigheid in de kamer, bijvoorbeeld
-        `sensor.slaapkamer_luchtvochtigheid`. Hiermee wordt bepaald of de
+        De sensor met de luchtvochtigheid in de kamer. Hiermee wordt bepaald of de
         airco moet drogen, ventileren of uit kan.
       selector:
         entity:

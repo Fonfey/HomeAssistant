@@ -14,9 +14,7 @@ blueprint:
       name: Force mode
       description: >-
         De keuzelijsten waarmee de batterij geforceerd wordt geladen of in
-        standby gezet. Kies er één per batterij, bijvoorbeeld
-        `select.marstek_venus_modbus_force_mode` en
-        `select.marstek_venus_modbus_force_mode_2`.
+        standby gezet. Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -27,8 +25,7 @@ blueprint:
       description: >-
         De keuzelijsten met de werkmodus van de batterij. Deze worden op
         *anti_feed* gezet, zodat er niet terug geleverd wordt aan het net.
-        Kies er één per batterij, bijvoorbeeld `select.marstek_1_user_work_mode`
-        en `select.marstek_2_user_work_mode`.
+        Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -39,9 +36,7 @@ blueprint:
       description: >-
         De schakelaars die de Modbus/RS485-besturing aan- en uitzetten. Die
         moet aan staan tijdens het geforceerd laden en gaat daarna weer uit.
-        Kies er één per batterij, bijvoorbeeld
-        `switch.marstek_venus_modbus_rs485_control_mode` en
-        `switch.marstek_venus_modbus_rs485_control_mode_2`.
+        Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -51,9 +46,7 @@ blueprint:
       name: Laadvermogen-entiteiten
       description: >-
         De instellingen voor het laadvermogen van de batterij. Deze worden op
-        het ingestelde vermogen gezet. Kies er één per batterij, bijvoorbeeld
-        `number.marstek_venus_modbus_set_charge_power` en
-        `number.marstek_venus_modbus_set_charge_power_2`.
+        het ingestelde vermogen gezet. Kies er één per batterij.
       selector:
         entity:
           multiple: true

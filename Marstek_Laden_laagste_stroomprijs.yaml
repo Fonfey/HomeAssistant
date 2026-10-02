@@ -15,8 +15,7 @@ blueprint:
     tariff_sensor:
       name: Huidig stroomtarief
       description: >-
-        De Zonneplan-sensor met de huidige stroomprijs, bijvoorbeeld
-        `sensor.zonneplan_current_electricity_tariff`. Deze sensor bevat ook de
+        De Zonneplan-sensor met de huidige stroomprijs. Deze sensor bevat ook de
         prijzen van de rest van de dag, zodat het goedkoopste uur bepaald kan
         worden. Bij elke prijswijziging wordt de automation gecontroleerd.
       selector:
@@ -26,8 +25,7 @@ blueprint:
     battery_soc_sensor:
       name: Batterij laadniveau (SoC)
       description: >-
-        De sensor met het huidige laadpercentage van de batterij, bijvoorbeeld
-        `sensor.marstek_average_battery_soc`. Er wordt alleen geladen als deze
+        De sensor met het huidige laadpercentage van de batterij. Er wordt alleen geladen als deze
         onder de 60% zit.
       selector:
         entity:
@@ -36,8 +34,7 @@ blueprint:
     pv_power_sensor:
       name: Zonnepanelen vermogen
       description: >-
-        De sensor met het huidige vermogen van je zonnepanelen in watt,
-        bijvoorbeeld `sensor.pv_power`. Er wordt alleen geladen als de
+        De sensor met het huidige vermogen van je zonnepanelen in watt. Er wordt alleen geladen als de
         zonnepanelen minder dan 1000 W leveren, zodat je niet duur laadt
         terwijl de zon het gratis kan doen.
       selector:
@@ -47,8 +44,7 @@ blueprint:
     charge_automation:
       name: Laad-automation
       description: >-
-        De automation die de batterij daadwerkelijk laat laden, bijvoorbeeld
-        `automation.marstek_opladen`. Deze wordt gestart zonder zijn eigen
+        De automation die de batterij daadwerkelijk laat laden. Deze wordt gestart zonder zijn eigen
         voorwaarden te controleren. Er wordt niet opnieuw gestart als hij al
         bezig is.
       selector:

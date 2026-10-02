@@ -16,9 +16,7 @@ blueprint:
       name: Force mode
       description: >-
         De keuzelijsten waarmee de batterij geforceerd wordt geladen,
-        ontladen of in standby gezet. Kies er één per batterij, bijvoorbeeld
-        `select.marstek_venus_modbus_force_mode` en
-        `select.marstek_venus_modbus_force_mode_2`.
+        ontladen of in standby gezet. Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -28,8 +26,7 @@ blueprint:
       name: Werkmodus (user work mode)
       description: >-
         De keuzelijsten met de werkmodus van de batterij. Deze worden op
-        *anti_feed* gezet. Kies er één per batterij, bijvoorbeeld
-        `select.marstek_1_user_work_mode` en `select.marstek_2_user_work_mode`.
+        *anti_feed* gezet. Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -39,9 +36,7 @@ blueprint:
       name: RS485-besturing
       description: >-
         De schakelaars voor de Modbus/RS485-besturing. Deze worden
-        uitgezet. Kies er één per batterij, bijvoorbeeld
-        `switch.marstek_venus_modbus_rs485_control_mode` en
-        `switch.marstek_venus_modbus_rs485_control_mode_2`.
+        uitgezet. Kies er één per batterij.
       selector:
         entity:
           multiple: true
@@ -50,8 +45,7 @@ blueprint:
     charge_automation:
       name: Laad-automation
       description: >-
-        De automation die je met de blueprint Marstek - Opladen hebt gemaakt,
-        bijvoorbeeld `automation.marstek_opladen`. Zolang deze draait, wordt
+        De automation die je met de blueprint Marstek - Opladen hebt gemaakt. Zolang deze draait, wordt
         er niet ingegrepen.
       selector:
         entity:
@@ -60,8 +54,7 @@ blueprint:
     discharge_automation:
       name: Ontlaad-automation
       description: >-
-        De automation die je met de blueprint Marstek - Ontladen hebt gemaakt,
-        bijvoorbeeld `automation.marstek_ontladen`. Zolang deze draait, wordt
+        De automation die je met de blueprint Marstek - Ontladen hebt gemaakt. Zolang deze draait, wordt
         er niet ingegrepen.
       selector:
         entity:
@@ -82,8 +75,7 @@ blueprint:
     notify_entity:
       name: Melding (optioneel)
       description: >-
-        Krijg een melding als er is ingegrepen, bijvoorbeeld
-        `notify.mobile_app_telefoon`. Laat leeg als je geen melding wilt.
+        Krijg een melding als er is ingegrepen. Laat leeg als je geen melding wilt.
       default: []
       selector:
         entity:
