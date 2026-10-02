@@ -18,7 +18,7 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
 | [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Zet de batterijen terug naar standby als ze blijven hangen in laden of ontladen |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
-| [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
+| [`EnergyDashboard.yaml`](EnergyDashboard.yaml) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
 
 ---
@@ -289,14 +289,14 @@ Voor de kaart *Verwachte zon* voeg je bij je zonnepanelen in de Energie-instelli
 1. Installeer de [integraties en kaarten](#vereisten) en de [helpers](#benodigde-helpers), en ververs je browser (Ctrl+F5).
 2. Ga naar **Instellingen → Dashboards → Dashboard toevoegen → Nieuw dashboard vanaf nul**.
 3. Open het nieuwe dashboard, klik op het **potlood → ⋮ → Ruwe configuratie-editor**.
-4. Vervang alles door de inhoud van [`EnergyDashboad.txt`](EnergyDashboad.txt) en klik op **Opslaan**.
+4. Vervang alles door de inhoud van [`EnergyDashboard.yaml`](EnergyDashboard.yaml) en klik op **Opslaan**.
 5. Vervang de entiteiten door die van jezelf (Ctrl+F in de editor).
 
 > ⚠️ Plak dit niet in de ruwe editor van een bestaand dashboard: dan worden je andere tabbladen overschreven.
 
 ### Entiteiten om aan te passen
 
-Bovenaan [`EnergyDashboad.txt`](EnergyDashboad.txt) staat een volledige lijst. In het kort:
+Bovenaan [`EnergyDashboard.yaml`](EnergyDashboard.yaml) staat een volledige lijst. In het kort:
 
 | Onderdeel | Entiteiten |
 |---|---|
@@ -347,7 +347,7 @@ state: >
   }}
 ```
 
-### Dashboard ([`EnergyDashboad.txt`](EnergyDashboad.txt))
+### Dashboard ([`EnergyDashboard.yaml`](EnergyDashboard.yaml))
 
 | Onderdeel | Wat aanpassen | 1 batterij | 2 batterijen | 3 batterijen | 4 batterijen |
 |---|---|---|---|---|---|
