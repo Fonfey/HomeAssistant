@@ -7,10 +7,10 @@ blueprint:
     - de batterij onder de 60% zit;
     - de zonnepanelen minder dan 1000 W leveren;
     - de laad-automation niet al bezig is.
-
     Als alles klopt, wordt de laad-automation gestart.
     Gemaakt voor de Zonneplan-integratie.
   domain: automation
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Laden_laagste_stroomprijs.yaml
   input:
     tariff_sensor:
       name: Huidig stroomtarief
