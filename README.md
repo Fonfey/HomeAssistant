@@ -56,13 +56,13 @@ Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna
 
 ### Voor het dashboard
 
-| Kaart / integratie | Installeren |
-|---|---|
-| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | HACS → Frontend |
-| [B2500D Card](https://github.com/Neisi/b2500d-card) | HACS → Frontend |
-| [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | HACS → Frontend |
-| [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | HACS → Frontend |
-| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar), voor de kaart *Verwachte zon* (optioneel) | HACS → Integraties |
+| Kaart / integratie | Waarvoor in het dashboard | Installeren |
+|---|---|---|
+| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | De prijskaarten bovenaan: actuele prijs (groen, oranje of rood) en het goedkoopste en duurste uur van vandaag | HACS → Frontend |
+| [B2500D Card](https://github.com/Neisi/b2500d-card) | De batterijkaarten *Marstek voor* en *Marstek achter*: laadniveau, zonne-invoer en vermogen per batterij | HACS → Frontend |
+| [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | De kaarten met een gekleurde balk: *Opgeslagen*, *Dagelijks ontladen*, *Verbruik*, *Zelfverbruik*, *Actuele ontlaad*, *Zonnepanelen* en *Meterkast belasting* | HACS → Frontend |
+| [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | De grafiek *Zon • batterij • net*: vermogen van zonnepanelen, batterij en net over de afgelopen 24 uur | HACS → Frontend |
+| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar) | De voorspelling in de kaart *Verwachte zon* (optioneel; zonder Solcast toont de kaart alleen de werkelijke opbrengst) | HACS → Integraties |
 
 ### Wat waarvoor nodig is
 

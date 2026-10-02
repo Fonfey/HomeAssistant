@@ -58,13 +58,13 @@ So create the automations for **Opladen** and **Ontladen** first, then the price
 
 ### For the dashboard
 
-| Card / integration | Install via |
-|---|---|
-| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | HACS → Frontend |
-| [B2500D Card](https://github.com/Neisi/b2500d-card) | HACS → Frontend |
-| [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | HACS → Frontend |
-| [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | HACS → Frontend |
-| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar), for the *Solar forecast* card (optional) | HACS → Integrations |
+| Card / integration | Used in the dashboard for | Install via |
+|---|---|---|
+| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | The price cards at the top: current price (green, orange or red) and today's cheapest and most expensive hour | HACS → Frontend |
+| [B2500D Card](https://github.com/Neisi/b2500d-card) | The battery cards *Marstek voor* and *Marstek achter*: state of charge, solar input and power per battery | HACS → Frontend |
+| [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | The cards with a coloured bar: stored energy, discharged today, consumption, self-sufficiency, current discharge, solar panels and grid connection load | HACS → Frontend |
+| [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | The *Zon • batterij • net* graph: solar, battery and grid power over the last 24 hours | HACS → Frontend |
+| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar) | The forecast in the *Solar forecast* card (optional; without Solcast the card only shows actual production) | HACS → Integrations |
 
 ### What is needed for what
 
