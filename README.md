@@ -1,3 +1,5 @@
+🇳🇱 **Nederlands** | 🇬🇧 [English](README.en.md)
+
 # Home Assistant – Marstek thuisbatterij, Zonneplan & airco
 
 Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs, plus een blueprint om een **airco** te regelen op temperatuur en luchtvochtigheid.
