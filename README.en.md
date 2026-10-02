@@ -20,7 +20,7 @@ Blueprints and a dashboard for Home Assistant to smartly charge and discharge a 
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Starts discharging at the most expensive hour of the day |
 | [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Returns the batteries to standby if they get stuck charging or discharging |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Controls an air conditioner based on temperature and humidity within a time window |
-| [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overview of electricity price, batteries, solar panels and consumption |
+| [`EnergyDashboard.yaml`](EnergyDashboard.yaml) | Dashboard | Overview of electricity price, batteries, solar panels and consumption |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template sensors | Helpers required by the dashboard and blueprints |
 
 ---
@@ -291,14 +291,14 @@ For the *Solar forecast* card, add a **solar production forecast** to your solar
 1. Install the [integrations and cards](#requirements) and the [helpers](#required-helpers), then refresh your browser (Ctrl+F5).
 2. Go to **Settings → Dashboards → Add dashboard → New dashboard from scratch**.
 3. Open the new dashboard, click the **pencil → ⋮ → Raw configuration editor**.
-4. Replace everything with the contents of [`EnergyDashboad.txt`](EnergyDashboad.txt) and click **Save**.
+4. Replace everything with the contents of [`EnergyDashboard.yaml`](EnergyDashboard.yaml) and click **Save**.
 5. Replace the entities with your own (Ctrl+F in the editor).
 
 > ⚠️ Do not paste this into the raw editor of an existing dashboard: it will overwrite your other tabs.
 
 ### Entities to adjust
 
-A complete list is at the top of [`EnergyDashboad.txt`](EnergyDashboad.txt). In short:
+A complete list is at the top of [`EnergyDashboard.yaml`](EnergyDashboard.yaml). In short:
 
 | Component | Entities |
 |---|---|
@@ -349,7 +349,7 @@ state: >
   }}
 ```
 
-### Dashboard ([`EnergyDashboad.txt`](EnergyDashboad.txt))
+### Dashboard ([`EnergyDashboard.yaml`](EnergyDashboard.yaml))
 
 | Component | What to change | 1 battery | 2 batteries | 3 batteries | 4 batteries |
 |---|---|---|---|---|---|
