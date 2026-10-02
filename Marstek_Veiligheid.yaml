@@ -2,14 +2,10 @@ blueprint:
   name: Marstek - Veiligheid
   description: |
     Zet de Marstek-batterijen terug in de normale stand als ze blijven hangen in geforceerd laden of ontladen.
-
     Dat kan gebeuren als Home Assistant herstart, of als de automation Opladen of Ontladen wordt gestopt voordat de laad- of ontlaadduur voorbij is. De laatste stap (terug naar standby) wordt dan nooit uitgevoerd.
-
     Deze automation grijpt in:
-
     - **na een herstart van Home Assistant** (na 1 minuut, zodat de Marstek-integratie verbonden is);
     - **als een batterij langer dan de maximale duur** op *charge* of *discharge* staat.
-
     Hij grijpt alleen in als Opladen en Ontladen allebei niet draaien. De batterijen gaan dan naar *standby*, de werkmodus wordt *anti_feed* en RS485-besturing gaat uit.
   domain: automation
   source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Veiligheid.yaml
