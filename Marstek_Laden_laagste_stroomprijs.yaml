@@ -1,14 +1,16 @@
 blueprint:
   name: Marstek - Laden bij laagste stroomprijs
-  description: >-
+  description: |
     Start het laden van de Marstek-batterij op het goedkoopste uur van de dag.
+
     De automation controleert bij elke prijswijziging of:
+
     - het huidige uur het goedkoopste uur van vandaag is;
     - de batterij onder de 60% zit;
     - de zonnepanelen minder dan 1000 W leveren;
     - de laad-automation niet al bezig is.
 
-    Als alles klopt, krijg je een melding en wordt de laad-automation gestart.
+    Als alles klopt, wordt de laad-automation gestart.
     Gemaakt voor de Zonneplan-integratie.
   domain: automation
   input:
@@ -89,11 +91,6 @@ conditions:
     below: 1
 
 actions:
-  - action: notify.send_message
-    target:
-      entity_id: notify.jeroen
-    data:
-      message: Batterij wordt opgeladen
   - action: automation.trigger
     target:
       entity_id: !input charge_automation
