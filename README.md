@@ -159,7 +159,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 ### Benodigde kaarten (via HACS → Frontend)
 
 - [Mushroom](https://github.com/piitaya/lovelace-mushroom)
-- [B2500D Card](https://ha.fonferek.cloud/hacs/repository/1052179687)
+- [B2500D Card]([https://ha.fonferek.cloud/hacs/repository/1052179687](https://github.com/Neisi/b2500d-card))
 - [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 - [ApexCharts Card](https://github.com/RomRider/apexcharts-card)
 
@@ -168,7 +168,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 1. Installeer de kaarten hierboven en ververs je browser (Ctrl+F5).
 2. Ga naar **Instellingen → Dashboards → Dashboard toevoegen → Nieuw dashboard vanaf nul**.
 3. Open het nieuwe dashboard, klik op het **potlood → ⋮ → Ruwe configuratie-editor**.
-4. Vervang alles door de inhoud van [`energie_dashboard.yaml`](energie_dashboard.yaml) en klik op **Opslaan**.
+4. Vervang alles door de inhoud van [`energie_dashboard.yaml`](energie_dashboard.txt) en klik op **Opslaan**.
 5. Vervang de entiteiten door die van jezelf (Ctrl+F in de editor).
 
 > ⚠️ Plak dit niet in de ruwe editor van een bestaand dashboard: dan worden je andere tabbladen overschreven.
