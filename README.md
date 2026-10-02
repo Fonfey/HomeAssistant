@@ -159,7 +159,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 ### Benodigde kaarten (via HACS → Frontend)
 
 - [Mushroom](https://github.com/piitaya/lovelace-mushroom)
-- [B2500D Card]([https://ha.fonferek.cloud/hacs/repository/1052179687](https://github.com/Neisi/b2500d-card))
+- [B2500D Card](https://github.com/Neisi/b2500d-card)
 - [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 - [ApexCharts Card](https://github.com/RomRider/apexcharts-card)
 
@@ -175,7 +175,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 
 ### Entiteiten om aan te passen
 
-Bovenaan [`energie_dashboard.yaml`](energie_dashboard.yaml) staat een volledige lijst. In het kort:
+Bovenaan [`energie_dashboard.yaml`](energiedashboard.txt) staat een volledige lijst. In het kort:
 
 | Onderdeel | Entiteiten |
 |---|---|
