@@ -10,8 +10,8 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 
 | Bestand | Soort | Wat het doet |
 |---|---|---|
-| [`Marstek_Opladen.yaml`](Marstek_Opladen.yaml) | Blueprint | Laadt de batterijen geforceerd met 2500 W gedurende een in te stellen tijd |
-| [`Marstek_Ontladen.yaml`](Marstek_Ontladen.yaml) | Blueprint | Ontlaadt de batterijen geforceerd met 2500 W gedurende een in te stellen tijd |
+| [`Marstek_Opladen.yaml`](Marstek_Opladen.yaml) | Blueprint | Laadt de batterijen geforceerd met een in te stellen vermogen en tijd |
+| [`Marstek_Ontladen.yaml`](Marstek_Ontladen.yaml) | Blueprint | Ontlaadt de batterijen geforceerd met een in te stellen vermogen en tijd |
 | [`Marstek_Laden_laagste_stroomprijs.yaml`](Marstek_Laden_laagste_stroomprijs.yaml) | Blueprint | Start het opladen op het goedkoopste uur van de dag |
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
@@ -98,7 +98,7 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 **Wat er gebeurt**
 1. Batterijen naar *standby*, werkmodus *anti_feed*, RS485-besturing uit
 2. 10 seconden wachten
-3. Laadvermogen op 2500 W, batterijen op *charge*, RS485-besturing aan
+3. Laadvermogen op de ingestelde waarde, batterijen op *charge*, RS485-besturing aan
 4. Laden gedurende de ingestelde laadduur
 5. Terug naar *standby*, werkmodus *anti_feed*, RS485-besturing uit
 
@@ -109,19 +109,25 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 | Force mode | `select.marstek_venus_modbus_force_mode` |
 | Werkmodus | `select.marstek_1_user_work_mode` |
 | RS485-besturing | `switch.marstek_venus_modbus_rs485_control_mode` |
-| Laadvermogen | `number.marstek_venus_modbus_set_charge_power` |
+| Laadvermogen-entiteiten | `number.marstek_venus_modbus_set_charge_power` |
+| Laadvermogen per batterij | Standaard 2500 W (100–2500 W) |
 | Laadduur | Standaard 1 uur |
+
+**Laad- en ontlaadvermogen kiezen**
+
+Het vermogen geldt *per batterij*. Met twee batterijen op 2500 W vraag je dus 5000 W van je aansluiting. Bij een 1x35A-aansluiting (max. 8050 W) blijft er dan weinig ruimte over voor de rest van het huis. Kies een lagere waarde als je aansluiting dat niet aankan, of als je rustiger wilt laden. Gebruik de sensor [Meterkast belasting](#meterkast-belasting) om dit in de gaten te houden.
 
 ## Marstek - Ontladen
 
-Werkt hetzelfde als *Opladen*, maar zet de batterijen op *discharge* met 2500 W ontlaadvermogen.
+Werkt hetzelfde als *Opladen*, maar zet de batterijen op *discharge* met het ingestelde ontlaadvermogen.
 
 | Veld | Voorbeeld |
 |---|---|
 | Force mode | `select.marstek_venus_modbus_force_mode` |
 | Werkmodus | `select.marstek_1_user_work_mode` |
 | RS485-besturing | `switch.marstek_venus_modbus_rs485_control_mode` |
-| Ontlaadvermogen | `number.marstek_venus_modbus_set_discharge_power` |
+| Ontlaadvermogen-entiteiten | `number.marstek_venus_modbus_set_discharge_power` |
+| Ontlaadvermogen per batterij | Standaard 2500 W (100–2500 W) |
 | Ontlaadduur | Standaard 1 uur |
 
 ## Marstek - Laden bij laagste stroomprijs
