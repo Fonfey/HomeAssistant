@@ -69,14 +69,14 @@ Daarnaast is er **Marstek - Veiligheid**: een vangnet dat de batterijen terugzet
 
 ### Wat waarvoor nodig is
 
-| Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Solcast | Helpers | Kaarten |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Marstek - Opladen / Ontladen | | ✅ | | | | | |
-| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | | ✅ | |
-| Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ | |
-| Marstek - Veiligheid | | ✅ | | | | | |
-| Airco Temperatuur en luchtvochtigheid | | | | | | | |
-| Energie-dashboard | ✅ | ✅ | ✅ | ✅ | optioneel | ✅ | ✅ |
+| Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Solcast | Helpers |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Marstek - Opladen / Ontladen | | ✅ | | | | |
+| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | | ✅ |
+| Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ |
+| Marstek - Veiligheid | | ✅ | | | | |
+| Airco Temperatuur en luchtvochtigheid | | | | | | |
+| Energie-dashboard | ✅ | ✅ | ✅ | ✅ | optioneel | ✅ |
 
 De airco-blueprint heeft alleen een airco (`climate`-entiteit) en een temperatuur- en luchtvochtigheidssensor nodig.
 
