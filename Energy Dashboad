@@ -1,0 +1,385 @@
+# =====================================================================
+# Energie-dashboard - Marstek thuisbatterij + Zonneplan
+# =====================================================================
+#
+# GEBRUIK
+#   1. Maak een nieuw dashboard: Instellingen > Dashboards > Dashboard toevoegen
+#      > "Nieuw dashboard vanaf nul".
+#   2. Open het dashboard, klik op het potlood > drie puntjes (⋮) >
+#      "Ruwe configuratie-editor".
+#   3. Vervang alles door de inhoud van dit bestand en sla op.
+#   4. Vervang de entiteiten hieronder door die van jezelf
+#      (zoek en vervang in de editor met Ctrl+F).
+#
+# BENODIGDE KAARTEN (installeren via HACS > Frontend)
+#   - Mushroom                    (custom:mushroom-template-card)
+#   - B2500D Card                 (custom:b2500d-card)
+#   - Entity Progress Card        (custom:entity-progress-card)
+#   - ApexCharts Card             (custom:apexcharts-card)
+#
+# ENTITEITEN DIE JE MOET AANPASSEN
+#   Stroomprijs (Zonneplan-integratie, meestal al goed):
+#     sensor.zonneplan_current_electricity_tariff
+#
+#   Zonnepanelen en net:
+#     sensor.pv_power                     - vermogen zonnepanelen (W)
+#     sensor.p1_meter_vermogen            - vermogen P1-meter (W, negatief = teruglevering)
+#
+#   Marstek-batterij 1 (kaart "Marstek voor"):
+#     sensor.marstek_1_battery_soc
+#     sensor.marstek_1_stored_energy
+#     sensor.marstek_1_ac_power
+#     sensor.marstek_venus_modbus_total_daily_discharging_energy
+#
+#   Marstek-batterij 2 (kaart "Marstek achter"):
+#     sensor.marstek_2_battery_soc
+#     sensor.marstek_2_stored_energy
+#     sensor.marstek_2_ac_power
+#     sensor.marstek_venus_modbus_total_daily_discharging_energy_2
+#
+#   Totalen van beide batterijen (eigen template-sensoren):
+#     sensor.marstek_total_stored_energy
+#     sensor.marstek_total_discharging_energy_today
+#     sensor.marstek_total_ac_power
+#
+#   Overige eigen template-sensoren:
+#     sensor.zonne_zelfverbruik_percentage - zelfverbruik zonne-energie (%)
+#     sensor.meterkast_belasting           - belasting meterkast (%)
+#
+#   Automations voor de knoppen Opladen / Ontladen
+#   (gemaakt met de blueprints Marstek - Opladen / Marstek - Ontladen):
+#     automation.marstek_opladen
+#     automation.marstek_ontladen
+#
+# Heb je maar één batterij? Verwijder dan de kaart "Marstek achter".
+# Heb je een sensor niet? Verwijder dan de kaart die hem gebruikt.
+#
+# Bron: https://github.com/Fonfey/HomeAssistant
+# =====================================================================
+
+title: Energie
+views:
+  - type: sections
+    max_columns: 3
+    icon: mdi:battery-charging
+    path: Energie
+    title: Energie
+    sections:
+      - type: grid
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Actuele prijs
+            secondary: >
+              {{ states('sensor.zonneplan_current_electricity_tariff') | float(0) |
+              round(3) }} €/kWh
+            icon: mdi:cash-check
+            grid_options:
+              columns: 6
+              rows: 1
+            color: >
+              {% set prijs = states('sensor.zonneplan_current_electricity_tariff') |
+              float(0) %} {% if prijs < 0.20 %}
+                green
+              {% elif prijs < 0.45 %}
+                orange
+              {% else %}
+                red
+              {% endif %}
+            features_position: inline
+          - type: custom:mushroom-template-card
+            primary: >-
+              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price < ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ ns.t.strftime('%H:%M') if ns.t else '-' }}
+            secondary: >-
+              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price < ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ '%.4f' | format(ns.p / 10000000) if ns.p is not none else '-' }} €/kWh
+            icon: mdi:trending-down
+            icon_color: green
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:mushroom-template-card
+            primary: >-
+              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price > ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ ns.t.strftime('%H:%M') if ns.t else '-' }}
+            secondary: >-
+              {% set ns = namespace(p=none, t=none) %}{% for i in state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}{% set d = as_local(as_datetime(i.start_date)) %}{% if d.date() == now().date() and (ns.p is none or i.electricity_price > ns.p) %}{% set ns.p = i.electricity_price %}{% set ns.t = d %}{% endif %}{% endfor %}{{ '%.4f' | format(ns.p / 10000000) if ns.p is not none else '-' }} €/kWh
+            icon: mdi:trending-up
+            icon_color: red
+            grid_options:
+              columns: 6
+              rows: auto
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: perform-action
+              perform_action: automation.trigger
+              target:
+                entity_id:
+                  - automation.marstek_opladen
+              data:
+                skip_condition: false
+            grid_options:
+              columns: 3
+              rows: auto
+            icon: mdi:battery-plus-outline
+            name: Opladen
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: perform-action
+              perform_action: automation.trigger
+              target:
+                entity_id:
+                  - automation.marstek_ontladen
+              data:
+                skip_condition: false
+            grid_options:
+              columns: 3
+              rows: auto
+            icon: mdi:battery-minus
+            name: Ontladen
+          - output: true
+            battery: true
+            production: true
+            settings: true
+            solar: true
+            icon: true
+            compact: true
+            max_input_power: 2500
+            max_input_power2: 600
+            max_input_power3: 600
+            max_input_power4: 600
+            entities:
+              battery_percentage: sensor.marstek_1_battery_soc
+              battery_capacity: sensor.marstek_1_stored_energy
+              solar_power: sensor.pv_power
+              p1_power: sensor.p1_meter_vermogen
+              p2_power: sensor.p1_meter_vermogen
+              output_power: sensor.marstek_1_ac_power
+              production_today: sensor.marstek_venus_modbus_total_daily_discharging_energy
+            type: custom:b2500d-card
+            name: Marstek voor
+          - output: true
+            battery: true
+            production: true
+            settings: true
+            solar: true
+            icon: true
+            compact: true
+            max_input_power: 2500
+            max_input_power2: 600
+            max_input_power3: 600
+            max_input_power4: 600
+            entities:
+              battery_percentage: sensor.marstek_2_battery_soc
+              battery_capacity: sensor.marstek_2_stored_energy
+              solar_power: sensor.pv_power
+              p1_power: sensor.p1_meter_vermogen
+              p2_power: sensor.p1_meter_vermogen
+              output_power: sensor.marstek_2_ac_power
+              production_today: sensor.marstek_venus_modbus_total_daily_discharging_energy_2
+            type: custom:b2500d-card
+            name: Marstek achter
+          - type: custom:entity-progress-card
+            entity: sensor.marstek_total_stored_energy
+            name: Opgeslagen
+            icon: mdi:battery-high
+            unit: kWh
+            decimal: 2
+            max_value: 10.24
+            custom_theme:
+              - min: 0
+                max: 3
+                color: red
+              - min: 3
+                max: 7
+                color: orange
+              - min: 7
+                max: 10.24
+                color: green
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:entity-progress-card
+            entity: sensor.marstek_total_discharging_energy_today
+            name: Dagelijks Ontladen
+            icon: mdi:battery-arrow-down
+            unit: kWh
+            decimal: 2
+            max_value: 10.24
+            custom_theme:
+              - min: 0
+                max: 6
+                color: green
+              - min: 6
+                max: 9
+                color: orange
+              - min: 9
+                max: 10.24
+                color: red
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:entity-progress-card
+            entity: sensor.p1_meter_vermogen
+            name: Verbruik
+            icon: mdi:transmission-tower
+            unit: W
+            decimal: 0
+            min_value: -4000
+            max_value: 4000
+            custom_theme:
+              - min: -4000
+                max: 0
+                color: green
+              - min: 0
+                max: 4000
+                color: orange
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:entity-progress-card
+            entity: sensor.zonne_zelfverbruik_percentage
+            name: Zelfverbruik
+            icon: mdi:home-lightning-bolt
+            unit: '%'
+            decimal: 0
+            max_value: 100
+            custom_theme:
+              - min: 0
+                max: 40
+                color: red
+              - min: 40
+                max: 75
+                color: orange
+              - min: 75
+                max: 100
+                color: green
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:entity-progress-card
+            entity: sensor.marstek_total_ac_power
+            name: Actuele ontlaad
+            icon: mdi:flash
+            unit: W
+            decimal: 0
+            max_value: 5000
+            custom_theme:
+              - min: -2000
+                max: 1000
+                color: green
+              - min: 1000
+                max: 2000
+                color: orange
+              - min: 2000
+                max: 5000
+                color: red
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+          - type: custom:entity-progress-card
+            entity: sensor.pv_power
+            name: Zonnepanelen
+            icon: mdi:solar-power
+            unit: W
+            decimal: 0
+            max_value: 6000
+            custom_theme:
+              - min: 0
+                max: 1500
+                color: red
+              - min: 1500
+                max: 4500
+                color: orange
+              - min: 4500
+                max: 6000
+                color: green
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+            visibility:
+              - condition: state
+                state_not: unavailable
+          - type: custom:entity-progress-card
+            entity: sensor.meterkast_belasting
+            name: Meterkast belasting
+            icon: mdi:flash
+            unit: '%'
+            decimal: 0
+            max_value: 100
+            custom_theme:
+              - min: 0
+                max: 50
+                color: green
+              - min: 50
+                max: 75
+                color: orange
+              - min: 75
+                max: 100
+                color: red
+            tap_action:
+              action: more-info
+            grid_options:
+              columns: 6
+              rows: 1
+      - type: grid
+        cards:
+          - type: power-sources-graph
+          - type: energy-usage-graph
+      - type: grid
+        cards:
+          - type: custom:apexcharts-card
+            graph_span: 1d
+            header:
+              show: true
+              title: Zon • batterij • net
+              show_states: true
+              colorize_states: true
+            series:
+              - entity: sensor.pv_power
+                name: Zonnepanelen
+                type: area
+                color: orange
+                group_by:
+                  func: avg
+                  duration: 15m
+              - entity: sensor.marstek_total_ac_power
+                name: Batterij
+                type: line
+                color: green
+                group_by:
+                  func: avg
+                  duration: 15m
+              - entity: sensor.p1_meter_vermogen
+                name: Net
+                type: line
+                group_by:
+                  func: avg
+                  duration: 15m
+            apex_config:
+              stroke:
+                width: 2
+              yaxis:
+                - forceNiceScale: true
+                  decimalsInFloat: 0
+          - type: energy-distribution
+            link_dashboard: true
+          - type: energy-solar-graph
+            title: Verwachte zon
+    subview: false
+    cards: []
+    dense_section_placement: true
+    badges: []
