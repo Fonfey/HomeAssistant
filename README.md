@@ -159,7 +159,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 ### Benodigde kaarten (via HACS → Frontend)
 
 - [Mushroom](https://github.com/piitaya/lovelace-mushroom)
-- B2500D Card
+- [B2500D Card](https://github.com/Neisi/b2500d-card)
 - [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
 - [ApexCharts Card](https://github.com/RomRider/apexcharts-card)
 
