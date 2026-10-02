@@ -1,0 +1,171 @@
+blueprint:
+  name: Marstek - Veiligheid
+  description: |
+    Zet de Marstek-batterijen terug in de normale stand als ze blijven hangen in geforceerd laden of ontladen.
+
+    Dat kan gebeuren als Home Assistant herstart, of als de automation Opladen of Ontladen wordt gestopt voordat de laad- of ontlaadduur voorbij is. De laatste stap (terug naar standby) wordt dan nooit uitgevoerd.
+
+    Deze automation grijpt in:
+
+    - **na een herstart van Home Assistant** (na 1 minuut, zodat de Marstek-integratie verbonden is);
+    - **als een batterij langer dan de maximale duur** op *charge* of *discharge* staat.
+
+    Hij grijpt alleen in als Opladen en Ontladen allebei niet draaien. De batterijen gaan dan naar *standby*, de werkmodus wordt *anti_feed* en RS485-besturing gaat uit.
+  domain: automation
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Veiligheid.yaml
+  homeassistant:
+    min_version: 2024.10.0
+  input:
+    force_mode_selects:
+      name: Force mode
+      description: >-
+        De keuzelijsten waarmee de batterij geforceerd wordt geladen,
+        ontladen of in standby gezet. Kies er één per batterij, bijvoorbeeld
+        `select.marstek_venus_modbus_force_mode` en
+        `select.marstek_venus_modbus_force_mode_2`.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: select
+    work_mode_selects:
+      name: Werkmodus (user work mode)
+      description: >-
+        De keuzelijsten met de werkmodus van de batterij. Deze worden op
+        *anti_feed* gezet. Kies er één per batterij, bijvoorbeeld
+        `select.marstek_1_user_work_mode` en `select.marstek_2_user_work_mode`.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: select
+    rs485_switches:
+      name: RS485-besturing
+      description: >-
+        De schakelaars voor de Modbus/RS485-besturing. Deze worden
+        uitgezet. Kies er één per batterij, bijvoorbeeld
+        `switch.marstek_venus_modbus_rs485_control_mode` en
+        `switch.marstek_venus_modbus_rs485_control_mode_2`.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: switch
+    charge_automation:
+      name: Laad-automation
+      description: >-
+        De automation die je met de blueprint Marstek - Opladen hebt gemaakt,
+        bijvoorbeeld `automation.marstek_opladen`. Zolang deze draait, wordt
+        er niet ingegrepen.
+      selector:
+        entity:
+          filter:
+            - domain: automation
+    discharge_automation:
+      name: Ontlaad-automation
+      description: >-
+        De automation die je met de blueprint Marstek - Ontladen hebt gemaakt,
+        bijvoorbeeld `automation.marstek_ontladen`. Zolang deze draait, wordt
+        er niet ingegrepen.
+      selector:
+        entity:
+          filter:
+            - domain: automation
+    max_duration:
+      name: Maximale duur
+      description: >-
+        Hoe lang een batterij maximaal op *charge* of *discharge* mag staan
+        voordat er wordt ingegrepen. Kies dit iets langer dan je langste
+        laad- of ontlaadduur. Laad je 1 uur, dan is 2 uur veilig.
+      default:
+        hours: 2
+        minutes: 0
+        seconds: 0
+      selector:
+        duration:
+    notify_entity:
+      name: Melding (optioneel)
+      description: >-
+        Krijg een melding als er is ingegrepen, bijvoorbeeld
+        `notify.mobile_app_telefoon`. Laat leeg als je geen melding wilt.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: notify
+
+mode: single
+
+variables:
+  force_mode_selects: !input force_mode_selects
+  notify_entity: !input notify_entity
+
+triggers:
+  - trigger: homeassistant
+    event: start
+    id: herstart
+  - trigger: state
+    entity_id: !input force_mode_selects
+    to:
+      - charge
+      - discharge
+    for: !input max_duration
+    id: te_lang
+
+conditions: []
+
+actions:
+  # Na een herstart eerst wachten tot de Marstek-integratie verbonden is
+  - if:
+      - condition: trigger
+        id: herstart
+    then:
+      - delay:
+          minutes: 1
+
+  # Alleen ingrijpen als een batterij nog op charge of discharge staat
+  - condition: template
+    value_template: >-
+      {{ force_mode_selects | select('is_state', ['charge', 'discharge'])
+         | list | count > 0 }}
+
+  # Niet ingrijpen als laden of ontladen gewoon bezig is
+  - condition: numeric_state
+    entity_id: !input charge_automation
+    attribute: current
+    below: 1
+  - condition: numeric_state
+    entity_id: !input discharge_automation
+    attribute: current
+    below: 1
+
+  # Terug naar de normale stand
+  - action: select.select_option
+    target:
+      entity_id: !input force_mode_selects
+    data:
+      option: standby
+  - action: select.select_option
+    target:
+      entity_id: !input work_mode_selects
+    data:
+      option: anti_feed
+  - action: switch.turn_off
+    target:
+      entity_id: !input rs485_switches
+
+  # Optionele melding
+  - if:
+      - condition: template
+        value_template: "{{ notify_entity | count > 0 }}"
+    then:
+      - action: notify.send_message
+        target:
+          entity_id: !input notify_entity
+        data:
+          message: >-
+            Marstek-batterijen stonden nog op laden of ontladen
+            ({{ 'na een herstart van Home Assistant' if trigger.id == 'herstart'
+                else 'langer dan de maximale duur' }})
+            en zijn teruggezet naar standby.
