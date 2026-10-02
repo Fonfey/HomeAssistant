@@ -1,11 +1,11 @@
 blueprint:
   name: Marstek - Opladen
   description: |
-    Laadt de Marstek-batterijen met 2500 W per batterij gedurende de ingestelde laadduur (standaard 1 uur) en zet ze daarna terug in de normale stand.
+    Laadt de Marstek-batterijen met het ingestelde laadvermogen per batterij (standaard 2500 W) gedurende de ingestelde laadduur (standaard 1 uur) en zet ze daarna terug in de normale stand.
     Deze automation heeft geen eigen trigger. Hij wordt gestart door een andere automation, bijvoorbeeld de blueprint **Marstek - Laden bij laagste stroomprijs**.
     Wat er gebeurt:
     - De batterijen gaan in standby, de werkmodus wordt *anti_feed* en RS485-besturing gaat uit.
-    - Na 10 seconden wordt het laadvermogen op 2500 W gezet, de batterijen gaan op *charge* en RS485-besturing gaat aan.
+    - Na 10 seconden wordt het laadvermogen ingesteld, de batterijen gaan op *charge* en RS485-besturing gaat aan.
     - Na de ingestelde laadduur gaan de batterijen weer in standby, de werkmodus blijft *anti_feed* en RS485-besturing gaat uit.
   domain: automation
   source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Opladen.yaml
@@ -48,10 +48,10 @@ blueprint:
           filter:
             - domain: switch
     charge_power_numbers:
-      name: Laadvermogen
+      name: Laadvermogen-entiteiten
       description: >-
         De instellingen voor het laadvermogen van de batterij. Deze worden op
-        2500 W gezet. Kies er één per batterij, bijvoorbeeld
+        het ingestelde vermogen gezet. Kies er één per batterij, bijvoorbeeld
         `number.marstek_venus_modbus_set_charge_power` en
         `number.marstek_venus_modbus_set_charge_power_2`.
       selector:
@@ -59,6 +59,20 @@ blueprint:
           multiple: true
           filter:
             - domain: number
+    charge_power_value:
+      name: Laadvermogen per batterij
+      description: >-
+        Met hoeveel watt elke batterij laadt. Standaard 2500 W, het
+        maximum van een Marstek Venus E. Kies een lagere waarde als je
+        aansluiting of batterij minder aankan.
+      default: 2500
+      selector:
+        number:
+          min: 100
+          max: 2500
+          step: 50
+          unit_of_measurement: W
+          mode: slider
     charge_duration:
       name: Laadduur
       description: >-
@@ -98,7 +112,7 @@ actions:
     target:
       entity_id: !input charge_power_numbers
     data:
-      value: 2500
+      value: !input charge_power_value
   - action: select.select_option
     target:
       entity_id: !input force_mode_selects
