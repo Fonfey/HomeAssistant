@@ -1,0 +1,80 @@
+blueprint:
+  name: Marstek - Ontladen bij hoogste stroomprijs
+  description: |
+    Start het ontladen van de Marstek-batterij op het duurste uur van de dag.
+    De automation controleert bij elke prijswijziging of:
+    - het huidige uur het duurste uur van vandaag is;
+    - de batterij bijna vol is (boven de 90%);
+    - de ontlaad-automation niet al bezig is.
+    Als alles klopt, wordt de ontlaad-automation gestart.
+    Gemaakt voor de Zonneplan-integratie.
+  domain: automation
+  input:
+    tariff_sensor:
+      name: Huidig stroomtarief
+      description: >-
+        De Zonneplan-sensor met de huidige stroomprijs, bijvoorbeeld
+        `sensor.zonneplan_current_electricity_tariff`. Deze sensor bevat ook de
+        prijzen van de rest van de dag, zodat het duurste uur bepaald kan
+        worden. Bij elke prijswijziging wordt de automation gecontroleerd.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    battery_soc_sensor:
+      name: Batterij laadniveau (SoC)
+      description: >-
+        De sensor met het huidige laadpercentage van de batterij, bijvoorbeeld
+        `sensor.marstek_average_battery_soc`. Er wordt alleen ontladen als de
+        batterij bijna vol is (boven de 90%).
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    discharge_automation:
+      name: Ontlaad-automation
+      description: >-
+        De automation die de batterij daadwerkelijk laat ontladen, bijvoorbeeld
+        `automation.marstek_ontladen`. Deze wordt gestart zonder zijn eigen
+        voorwaarden te controleren. Er wordt niet opnieuw gestart als hij al
+        bezig is.
+      selector:
+        entity:
+          filter:
+            - domain: automation
+
+mode: single
+
+variables:
+  tariff_sensor: !input tariff_sensor
+  # Zonneplan: forecast-prijzen staan in 1/10.000.000 euro
+  price_factor: 10000000
+
+triggers:
+  - trigger: state
+    entity_id: !input tariff_sensor
+
+conditions:
+  - condition: numeric_state
+    entity_id: !input battery_soc_sensor
+    above: 90
+  - condition: template
+    value_template: >-
+      {% set vandaag = now().date().isoformat() %}
+      {% set forecast = state_attr(tariff_sensor, 'forecast') or [] %}
+      {% set prijzen = forecast
+           | selectattr('start_date', 'match', '^' ~ vandaag)
+           | map(attribute='electricity_price') | list %}
+      {{ prijzen | count > 0 and
+         ((states(tariff_sensor) | float(0) * price_factor) | round(0)) == prijzen | max }}
+  - condition: numeric_state
+    entity_id: !input discharge_automation
+    attribute: current
+    below: 1
+
+actions:
+  - action: automation.trigger
+    target:
+      entity_id: !input discharge_automation
+    data:
+      skip_condition: true
