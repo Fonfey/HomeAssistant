@@ -18,6 +18,7 @@ Blueprints and a dashboard for Home Assistant to smartly charge and discharge a 
 | [`Marstek_Ontladen.yaml`](Marstek_Ontladen.yaml) | Blueprint | Force-discharges the batteries with an adjustable power and duration |
 | [`Marstek_Laden_laagste_stroomprijs.yaml`](Marstek_Laden_laagste_stroomprijs.yaml) | Blueprint | Starts charging at the cheapest hour of the day |
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Starts discharging at the most expensive hour of the day |
+| [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Returns the batteries to standby if they get stuck charging or discharging |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Controls an air conditioner based on temperature and humidity within a time window |
 | [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overview of electricity price, batteries, solar panels and consumption |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template sensors | Helpers required by the dashboard and blueprints |
@@ -37,6 +38,8 @@ Discharge at highest price  ──starts──▶   Marstek - Ontladen  (dischar
 2. **Lowest / highest price** decide *when* this happens and start the right automation.
 
 So create the automations for **Opladen** and **Ontladen** first, then the price-based ones.
+
+There is also **Marstek - Veiligheid** (safety): a safety net that restores the batteries if they get stuck charging or discharging after a restart or a stopped automation. This is strongly recommended.
 
 ---
 
@@ -73,6 +76,7 @@ So create the automations for **Opladen** and **Ontladen** first, then the price
 | Marstek - Opladen / Ontladen | | ✅ | | | | | |
 | Charge at lowest price | ✅ | ✅ | | ✅ | | ✅ | |
 | Discharge at highest price | ✅ | ✅ | | | | ✅ | |
+| Marstek - Veiligheid (safety) | | ✅ | | | | | |
 | Air conditioning temperature and humidity | | | | | | | |
 | Energy dashboard | ✅ | ✅ | ✅ | ✅ | optional | ✅ | ✅ |
 
@@ -90,6 +94,7 @@ Click a button below, or in Home Assistant go to **Settings → Automations & sc
 | Marstek - Ontladen (discharge) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen.yaml) |
 | Marstek - Laden bij laagste stroomprijs (charge at lowest price) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Laden_laagste_stroomprijs.yaml) |
 | Marstek - Ontladen bij hoogste stroomprijs (discharge at highest price) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen_Hoogste_stroomprijs.yaml) |
+| Marstek - Veiligheid (safety) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Veiligheid.yaml) |
 | Airco Temperatuur en luchtvochtigheid (air conditioning) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FAirco-Temperatuur_en_luchtvochtigheid.yaml) |
 
 After an update on GitHub, click **Re-import blueprint** on the blueprint in Home Assistant to get the latest version.
@@ -164,6 +169,37 @@ Checks on every price change whether the battery should start discharging. The d
 | Huidig stroomtarief | Current electricity price | `sensor.zonneplan_current_electricity_tariff` |
 | Batterij laadniveau (SoC) | Battery state of charge | `sensor.marstek_average_battery_soc` |
 | Ontlaad-automation | Discharge automation | `automation.marstek_ontladen` |
+
+## Marstek - Veiligheid (safety)
+
+A safety net for when the batteries get stuck in forced charging or discharging.
+
+**Why is this needed?**
+
+*Opladen* and *Ontladen* wait until the charge or discharge duration has passed and only then return the batteries to standby. If Home Assistant restarts during that time, or the automation is stopped, that last step never runs. The batteries then keep charging or discharging, with RS485 control on, until you intervene yourself.
+
+**When does it step in?**
+
+- **After a Home Assistant restart**, after 1 minute (so the Marstek integration has connected first);
+- **when a battery stays in** *charge* or *discharge* **longer than the maximum duration**.
+
+It only steps in when a battery is still in *charge* or *discharge* and *Opladen* and *Ontladen* are both not running. A normal charging session is never interrupted.
+
+**What does it do?**
+
+The same steps as the end of *Opladen* and *Ontladen*: force mode to *standby*, work mode to *anti_feed* and RS485 control off. Optionally you get a notification.
+
+After a restart, charging does not resume automatically. The price-based blueprints start again at the next price change if needed.
+
+| Field (Dutch) | Meaning | Example / default |
+|---|---|---|
+| Force mode | Force mode | `select.marstek_venus_modbus_force_mode` |
+| Werkmodus | Work mode | `select.marstek_1_user_work_mode` |
+| RS485-besturing | RS485 control | `switch.marstek_venus_modbus_rs485_control_mode` |
+| Laad-automation | Charge automation | `automation.marstek_opladen` |
+| Ontlaad-automation | Discharge automation | `automation.marstek_ontladen` |
+| Maximale duur | Maximum duration | Default 2 hours. Choose slightly longer than your longest charge or discharge duration |
+| Melding (optioneel) | Notification (optional) | E.g. `notify.mobile_app_phone`, or leave empty |
 
 ## Airco Temperatuur en luchtvochtigheid (air conditioning)
 

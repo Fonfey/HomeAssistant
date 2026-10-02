@@ -16,6 +16,7 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 | [`Marstek_Ontladen.yaml`](Marstek_Ontladen.yaml) | Blueprint | Ontlaadt de batterijen geforceerd met een in te stellen vermogen en tijd |
 | [`Marstek_Laden_laagste_stroomprijs.yaml`](Marstek_Laden_laagste_stroomprijs.yaml) | Blueprint | Start het opladen op het goedkoopste uur van de dag |
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
+| [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Zet de batterijen terug naar standby als ze blijven hangen in laden of ontladen |
 | [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
 | [`EnergyDashboad.txt`](EnergyDashboad.txt) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
@@ -35,6 +36,8 @@ Ontladen bij hoogste stroomprijs ──start──▶   Marstek - Ontladen
 2. **Laagste / hoogste stroomprijs** bepalen *wanneer* dat gebeurt en starten de juiste automation.
 
 Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna die voor de stroomprijs.
+
+Daarnaast is er **Marstek - Veiligheid**: een vangnet dat de batterijen terugzet als ze na een herstart of een gestopte automation blijven hangen in laden of ontladen. Dit wordt sterk aangeraden.
 
 ---
 
@@ -71,6 +74,7 @@ Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna
 | Marstek - Opladen / Ontladen | | ✅ | | | | | |
 | Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | | ✅ | |
 | Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ | |
+| Marstek - Veiligheid | | ✅ | | | | | |
 | Airco Temperatuur en luchtvochtigheid | | | | | | | |
 | Energie-dashboard | ✅ | ✅ | ✅ | ✅ | optioneel | ✅ | ✅ |
 
@@ -88,6 +92,7 @@ Klik op een knop hieronder, of ga in Home Assistant naar **Instellingen → Auto
 | Marstek - Ontladen | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen.yaml) |
 | Marstek - Laden bij laagste stroomprijs | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Laden_laagste_stroomprijs.yaml) |
 | Marstek - Ontladen bij hoogste stroomprijs | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen_Hoogste_stroomprijs.yaml) |
+| Marstek - Veiligheid | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Veiligheid.yaml) |
 | Airco Temperatuur en luchtvochtigheid | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FAirco-Temperatuur_en_luchtvochtigheid.yaml) |
 
 Na een update op GitHub kun je in Home Assistant bij de blueprint op **Opnieuw importeren** klikken om de nieuwste versie op te halen.
@@ -162,6 +167,37 @@ Controleert bij elke prijswijziging of de batterij moet gaan ontladen. De ontlaa
 | Huidig stroomtarief | `sensor.zonneplan_current_electricity_tariff` |
 | Batterij laadniveau (SoC) | `sensor.marstek_average_battery_soc` |
 | Ontlaad-automation | `automation.marstek_ontladen` |
+
+## Marstek - Veiligheid
+
+Een vangnet voor als de batterijen blijven hangen in geforceerd laden of ontladen.
+
+**Waarom is dit nodig?**
+
+*Opladen* en *Ontladen* wachten tot de laad- of ontlaadduur voorbij is en zetten de batterijen daarna pas terug naar standby. Herstart Home Assistant in die tijd, of stop je de automation, dan wordt die laatste stap nooit uitgevoerd. De batterijen blijven dan laden of ontladen, met RS485-besturing aan, totdat je zelf ingrijpt.
+
+**Wanneer grijpt hij in?**
+
+- **Na een herstart van Home Assistant**, na 1 minuut (zodat de Marstek-integratie eerst verbinding heeft);
+- **als een batterij langer dan de maximale duur** op *charge* of *discharge* staat.
+
+Hij grijpt alleen in als een batterij nog op *charge* of *discharge* staat én *Opladen* en *Ontladen* allebei niet draaien. Een normale laadbeurt wordt dus nooit onderbroken.
+
+**Wat doet hij?**
+
+Dezelfde stappen als het einde van *Opladen* en *Ontladen*: force mode naar *standby*, werkmodus naar *anti_feed* en RS485-besturing uit. Optioneel krijg je een melding.
+
+Na een herstart gaat het laden niet vanzelf verder. De stroomprijs-blueprints starten bij de volgende prijswijziging opnieuw als dat nodig is.
+
+| Veld | Voorbeeld / standaard |
+|---|---|
+| Force mode | `select.marstek_venus_modbus_force_mode` |
+| Werkmodus | `select.marstek_1_user_work_mode` |
+| RS485-besturing | `switch.marstek_venus_modbus_rs485_control_mode` |
+| Laad-automation | `automation.marstek_opladen` |
+| Ontlaad-automation | `automation.marstek_ontladen` |
+| Maximale duur | Standaard 2 uur. Kies iets langer dan je langste laad- of ontlaadduur |
+| Melding (optioneel) | Bijvoorbeeld `notify.mobile_app_telefoon`, of leeg laten |
 
 ## Airco Temperatuur en luchtvochtigheid
 
