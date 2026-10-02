@@ -22,8 +22,13 @@
 #   sensor.pv_power                               (vermogen zonnepanelen, W)
 #   sensor.p1_meter_vermogen                      (vermogen P1-meter, W; negatief = teruglevering)
 #
-# Heb je maar één batterij? Haal dan de regels met "_2" / "marstek_2" weg
-# en deel de gemiddelde SoC niet door 2.
+# AANTAL BATTERIJEN
+#   Dit bestand gaat uit van 2 batterijen. Heb je er 1, 3 of 4? Pas dan de
+#   vier Marstek-sensoren hieronder aan (gemarkeerd met "AANTAL BATTERIJEN"):
+#   - 1 batterij:   haal de regels met "marstek_2" / "_2" weg.
+#   - 3 of 4:       voeg regels toe voor "marstek_3" / "_3" (en "_4").
+#   - Gemiddelde SoC: pas ook de deler "/ 2" aan naar het aantal batterijen.
+#   Zie ook de README, onderdeel "Aantal batterijen".
 # =====================================================================
 
 template:
@@ -106,6 +111,7 @@ template:
       # ---------------------------------------------------------------
       # Marstek: totalen van beide batterijen
       # ---------------------------------------------------------------
+      # AANTAL BATTERIJEN: één regel per batterij
       - name: "Marstek Total AC Power"
         unique_id: marstek_total_ac_power
         unit_of_measurement: "W"
@@ -121,6 +127,9 @@ template:
 
       # Gebruikt door de blueprints "Laden bij laagste stroomprijs"
       # en "Ontladen bij hoogste stroomprijs".
+      # AANTAL BATTERIJEN: één regel per batterij, en "/ 2" aanpassen naar
+      # het aantal batterijen. Vergeet je dit, dan klopt het percentage niet
+      # en kan de batterij onterecht gaan laden of ontladen.
       - name: "Marstek Average Battery SoC"
         unique_id: marstek_average_battery_soc
         unit_of_measurement: "%"
@@ -136,6 +145,7 @@ template:
             ) | round(1)
           }}
 
+      # AANTAL BATTERIJEN: één regel per batterij
       - name: "Marstek Total Stored Energy"
         unique_id: marstek_total_stored_energy
         unit_of_measurement: "kWh"
@@ -149,6 +159,7 @@ template:
             ) | round(2)
           }}
 
+      # AANTAL BATTERIJEN: één regel per batterij
       - name: "Marstek Total Discharging Energy Today"
         unique_id: marstek_total_discharging_energy_today
         unit_of_measurement: "kWh"
