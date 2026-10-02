@@ -1,0 +1,229 @@
+blueprint:
+  name: Airco Temperatuur en luchtvochtigheid
+  description: |
+    Regelt de airco in een kamer op basis van temperatuur en luchtvochtigheid, binnen een vast tijdvenster.
+    Tussen de starttijd en de eindtijd wordt elke 15 minuten gecontroleerd:
+    - boven de maximale temperatuur: koelen naar 20 °C;
+    - onder de minimale temperatuur: verwarmen naar 18 °C;
+    - temperatuur in orde en luchtvochtigheid boven het maximum: drogen;
+    - temperatuur in orde en luchtvochtigheid onder het minimum: alleen ventileren;
+    - temperatuur in orde en luchtvochtigheid tussen 48 en 52%: airco uit.
+    Op de eindtijd gaat de airco altijd uit.
+  domain: automation
+  input:
+    climate_entity:
+      name: Airco
+      description: >-
+        De airco die geregeld wordt, bijvoorbeeld
+        `climate.slaapkamer`.
+      selector:
+        entity:
+          filter:
+            - domain: climate
+    temperature_sensor:
+      name: Temperatuursensor
+      description: >-
+        De sensor met de temperatuur in de kamer, bijvoorbeeld
+        `sensor.slaapkamer_temperatuur`. Op basis hiervan wordt gekozen
+        tussen koelen, verwarmen of de luchtvochtigheid regelen.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    humidity_sensor:
+      name: Luchtvochtigheidssensor
+      description: >-
+        De sensor met de luchtvochtigheid in de kamer, bijvoorbeeld
+        `sensor.slaapkamer_luchtvochtigheid`. Hiermee wordt bepaald of de
+        airco moet drogen, ventileren of uit kan.
+      selector:
+        entity:
+          filter:
+            - domain: sensor
+    max_temperature:
+      name: Maximale temperatuur
+      description: >-
+        Boven deze temperatuur gaat de airco koelen naar 20 °C.
+      default: 24
+      selector:
+        number:
+          min: 10
+          max: 35
+          step: 0.5
+          unit_of_measurement: "°C"
+          mode: box
+    min_temperature:
+      name: Minimale temperatuur
+      description: >-
+        Onder deze temperatuur gaat de airco verwarmen naar 18 °C. Tussen de
+        minimale temperatuur en 30 °C wordt de luchtvochtigheid geregeld.
+      default: 16
+      selector:
+        number:
+          min: 5
+          max: 30
+          step: 0.5
+          unit_of_measurement: "°C"
+          mode: box
+    max_humidity:
+      name: Maximale luchtvochtigheid
+      description: >-
+        Boven deze luchtvochtigheid gaat de airco drogen.
+      default: 60
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+    min_humidity:
+      name: Minimale luchtvochtigheid
+      description: >-
+        Onder deze luchtvochtigheid gaat de airco alleen ventileren.
+      default: 40
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+    start_time:
+      name: Starttijd
+      description: Vanaf dit tijdstip regelt de automation de airco.
+      default: "17:00:00"
+      selector:
+        time:
+    end_time:
+      name: Eindtijd
+      description: Op dit tijdstip gaat de airco uit en stopt de regeling.
+      default: "18:30:00"
+      selector:
+        time:
+
+mode: restart
+
+triggers:
+  - trigger: time
+    at: !input start_time
+    id: start
+  - trigger: time_pattern
+    minutes: /15
+    id: controle
+  - trigger: time
+    at: !input end_time
+    id: einde
+
+conditions: []
+
+actions:
+  - choose:
+      # Eindtijd: airco uit
+      - conditions:
+          - condition: trigger
+            id: einde
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: "off"
+
+      # Te warm: koelen naar 20 °C
+      - conditions:
+          - condition: time
+            after: !input start_time
+            before: !input end_time
+          - condition: numeric_state
+            entity_id: !input temperature_sensor
+            above: !input max_temperature
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: cool
+          - action: climate.set_temperature
+            target:
+              entity_id: !input climate_entity
+            data:
+              temperature: 20
+
+      # Te koud: verwarmen naar 18 °C
+      - conditions:
+          - condition: time
+            after: !input start_time
+            before: !input end_time
+          - condition: numeric_state
+            entity_id: !input temperature_sensor
+            below: !input min_temperature
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: heat
+          - action: climate.set_temperature
+            target:
+              entity_id: !input climate_entity
+            data:
+              temperature: 18
+
+      # Te vochtig: drogen
+      - conditions:
+          - condition: time
+            after: !input start_time
+            before: !input end_time
+          - condition: numeric_state
+            entity_id: !input temperature_sensor
+            above: !input min_temperature
+            below: 30
+          - condition: numeric_state
+            entity_id: !input humidity_sensor
+            above: !input max_humidity
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: dry
+
+      # Te droog: alleen ventileren
+      - conditions:
+          - condition: time
+            after: !input start_time
+            before: !input end_time
+          - condition: numeric_state
+            entity_id: !input temperature_sensor
+            above: !input min_temperature
+            below: 30
+          - condition: numeric_state
+            entity_id: !input humidity_sensor
+            below: !input min_humidity
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: fan_only
+
+      # Luchtvochtigheid goed: airco uit
+      - conditions:
+          - condition: time
+            after: !input start_time
+            before: !input end_time
+          - condition: numeric_state
+            entity_id: !input temperature_sensor
+            above: !input min_temperature
+            below: 30
+          - condition: numeric_state
+            entity_id: !input humidity_sensor
+            above: 48
+            below: 52
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: !input climate_entity
+            data:
+              hvac_mode: "off"
