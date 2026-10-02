@@ -38,10 +38,40 @@ Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna
 
 ## Vereisten
 
-- Home Assistant 2024.10 of nieuwer
-- [Zonneplan ONE](https://github.com/fsaris/home-assistant-zonneplan-one)-integratie (voor `sensor.zonneplan_current_electricity_tariff` met `forecast`-attribuut)
-- Marstek Venus via Modbus, met de entiteiten voor *force mode*, *user work mode*, *RS485 control mode* en *charge/discharge power*
-- Een sensor met het vermogen van je zonnepanelen (voor *Laden bij laagste stroomprijs*)
+### Home Assistant
+
+- Home Assistant **2024.10** of nieuwer
+- [HACS](https://hacs.xyz/) voor de integraties en kaarten hieronder die niet standaard in Home Assistant zitten
+
+### Integraties
+
+| Integratie | Waarvoor | Installeren |
+|---|---|---|
+| [Zonneplan ONE](https://github.com/fsaris/home-assistant-zonneplan-one) | Actuele stroomprijs en prijzen van vandaag (`sensor.zonneplan_current_electricity_tariff` met `forecast`-attribuut) | HACS → Integraties |
+| [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus) | Aansturen van de batterijen: *force mode*, *RS485 control mode*, *charge/discharge power* en dagelijkse ontlaadenergie | HACS → Integraties |
+| P1-meter, bijvoorbeeld [DSMR Smart Meter](https://www.home-assistant.io/integrations/dsmr/) of [HomeWizard](https://www.home-assistant.io/integrations/homewizard/) | Vermogen van en naar het net (`sensor.p1_meter_vermogen`) | Standaard in Home Assistant |
+| Omvormer van je zonnepanelen | Vermogen van de zonnepanelen (`sensor.pv_power`) | Afhankelijk van je merk |
+
+### Kaarten (alleen voor het dashboard)
+
+| Kaart | Installeren |
+|---|---|
+| [Mushroom](https://github.com/piitaya/lovelace-mushroom) | HACS → Frontend |
+| [B2500D Card](https://github.com/Neisi/b2500d-card) | HACS → Frontend |
+| [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | HACS → Frontend |
+| [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | HACS → Frontend |
+
+### Wat waarvoor nodig is
+
+| Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Helpers | Kaarten |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|
+| Marstek - Opladen / Ontladen | | ✅ | | | | |
+| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | ✅ | |
+| Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | ✅ | |
+| Airco Temperatuur en luchtvochtigheid | | | | | | |
+| Energie-dashboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+De airco-blueprint heeft alleen een airco (`climate`-entiteit) en een temperatuur- en luchtvochtigheidssensor nodig.
 
 ---
 
@@ -157,12 +187,7 @@ Maak per kamer een eigen automation aan met deze blueprint.
 
 Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van vandaag, knoppen om handmatig te laden of ontladen, de status van beide batterijen, verbruik, zelfverbruik en grafieken van zon, batterij en net.
 
-### Benodigde kaarten (via HACS → Frontend)
-
-- [Mushroom](https://github.com/piitaya/lovelace-mushroom)
-- [B2500D Card](https://github.com/Neisi/b2500d-card)
-- [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card)
-- [ApexCharts Card](https://github.com/RomRider/apexcharts-card)
+Zie [Vereisten](#vereisten) voor de benodigde integraties en kaarten.
 
 ### Benodigde helpers
 
@@ -176,10 +201,37 @@ Het dashboard gebruikt een aantal eigen template-sensoren. Die staan in [`Energy
 | `sensor.marstek_total_stored_energy` | Opgeslagen |
 | `sensor.marstek_total_discharging_energy_today` | Dagelijks ontladen |
 | `sensor.marstek_average_battery_soc` | De stroomprijs-blueprints |
-| `sensor.zonne_zelfverbruik_percentage` | Zelfverbruik |
-| `sensor.meterkast_belasting` | Meterkast belasting (stel `max_vermogen` in op je aansluiting) |
+| `sensor.zonne_zelfverbruik_percentage` | Zelfverbruik (zie hieronder) |
+| `sensor.meterkast_belasting` | Meterkast belasting (zie hieronder) |
 
 Zet het bestand in je `packages`-map, of kopieer de sensoren naar je `configuration.yaml`, en herlaad via **Ontwikkelhulpmiddelen → YAML → Template-entiteiten**.
+
+#### Zelfverbruik
+
+Laat zien welk deel van je **huidige verbruik thuis** je zelf dekt met zonnepanelen en batterij, zonder stroom van het net.
+
+- **100%**: alles komt van zon en/of batterij
+- **0%**: alles komt van het net
+
+Het verbruik thuis wordt berekend als *zon + net + batterij* (net positief bij afname, batterij positief bij ontladen). Teruglevering verlaagt het percentage niet.
+
+#### Meterkast belasting
+
+Laat zien hoeveel procent van de maximale capaciteit van je aansluiting je op dit moment gebruikt. Zo zie je of je in de buurt komt van wat je hoofdzekering aankan, bijvoorbeeld als de batterij laadt terwijl ook de wasmachine en oven aan staan.
+
+De berekening is: *huidig netvermogen / maximaal vermogen × 100*. Afname en teruglevering tellen allebei mee, omdat de zekering in beide richtingen belast wordt.
+
+**Pas `max_vermogen` aan op jouw aansluiting.** Die vind je op je hoofdzekering of energiecontract (bijvoorbeeld *1x35A* of *3x25A*). Reken: *aantal fases × ampère × 230 V*.
+
+| Aansluiting | `max_vermogen` |
+|---|---|
+| 1x25A | 5750 |
+| 1x35A | 8050 |
+| 1x40A | 9200 |
+| 3x25A | 17250 |
+| 3x35A | 24150 |
+
+> Bij een 3-fase-aansluiting is dit een gemiddelde over alle fases. Eén fase kan dus al vol zitten terwijl het percentage nog laag is.
 
 ### Energie-dashboard van Home Assistant
 
@@ -187,7 +239,7 @@ De kaarten *Verbruik per bron*, *Energiegebruik*, *Energieverdeling* en *Verwach
 
 ### Installeren
 
-1. Installeer de kaarten hierboven en ververs je browser (Ctrl+F5).
+1. Installeer de [integraties en kaarten](#vereisten) en de [helpers](#benodigde-helpers), en ververs je browser (Ctrl+F5).
 2. Ga naar **Instellingen → Dashboards → Dashboard toevoegen → Nieuw dashboard vanaf nul**.
 3. Open het nieuwe dashboard, klik op het **potlood → ⋮ → Ruwe configuratie-editor**.
 4. Vervang alles door de inhoud van [`EnergyDashboad.txt`](EnergyDashboad.txt) en klik op **Opslaan**.
