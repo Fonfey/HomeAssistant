@@ -53,6 +53,7 @@ Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna
 | [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus) | Aansturen van de batterijen: *force mode*, *RS485 control mode*, *charge/discharge power* en dagelijkse ontlaadenergie | HACS → Integraties |
 | P1-meter, bijvoorbeeld [DSMR Smart Meter](https://www.home-assistant.io/integrations/dsmr/) of [HomeWizard](https://www.home-assistant.io/integrations/homewizard/) | Vermogen van en naar het net (`sensor.p1_meter_vermogen`) | Standaard in Home Assistant |
 | Omvormer van je zonnepanelen | Vermogen van de zonnepanelen (`sensor.pv_power`) | Afhankelijk van je merk |
+| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar) | Verwachte zonne-opbrengst voor de kaart *Verwachte zon* (optioneel) | HACS → Integraties |
 
 ### Kaarten (alleen voor het dashboard)
 
@@ -65,13 +66,13 @@ Maak daarom eerst de automations voor **Opladen** en **Ontladen** aan, en daarna
 
 ### Wat waarvoor nodig is
 
-| Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Helpers | Kaarten |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Marstek - Opladen / Ontladen | | ✅ | | | | |
-| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | ✅ | |
-| Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | ✅ | |
-| Airco Temperatuur en luchtvochtigheid | | | | | | |
-| Energie-dashboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Solcast | Helpers | Kaarten |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Marstek - Opladen / Ontladen | | ✅ | | | | | |
+| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | | ✅ | |
+| Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ | |
+| Airco Temperatuur en luchtvochtigheid | | | | | | | |
+| Energie-dashboard | ✅ | ✅ | ✅ | ✅ | optioneel | ✅ | ✅ |
 
 De airco-blueprint heeft alleen een airco (`climate`-entiteit) en een temperatuur- en luchtvochtigheidssensor nodig.
 
@@ -244,6 +245,8 @@ De berekening is: *huidig netvermogen / maximaal vermogen × 100*. Afname en ter
 ### Energie-dashboard van Home Assistant
 
 De kaarten *Verbruik per bron*, *Energiegebruik*, *Energieverdeling* en *Verwachte zon* gebruiken de gegevens van het ingebouwde Energie-dashboard. Stel dat eerst in via **Instellingen → Dashboards → Energie** (net, zonnepanelen en batterij), anders blijven deze kaarten leeg.
+
+Voor de kaart *Verwachte zon* voeg je bij je zonnepanelen in de Energie-instellingen een **opbrengstvoorspelling** toe, bijvoorbeeld van [Solcast](https://github.com/BJReplay/ha-solcast-solar). Zonder voorspelling toont de kaart alleen de werkelijke opbrengst.
 
 ### Installeren
 

@@ -55,6 +55,7 @@ So create the automations for **Opladen** and **Ontladen** first, then the price
 | [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus) | Controlling the batteries: *force mode*, *RS485 control mode*, *charge/discharge power* and daily discharge energy | HACS → Integrations |
 | P1 meter, e.g. [DSMR Smart Meter](https://www.home-assistant.io/integrations/dsmr/) or [HomeWizard](https://www.home-assistant.io/integrations/homewizard/) | Power from and to the grid (`sensor.p1_meter_vermogen`) | Built into Home Assistant |
 | Your solar inverter | Solar panel power (`sensor.pv_power`) | Depends on your brand |
+| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar) | Expected solar production for the *Solar forecast* card (optional) | HACS → Integrations |
 
 ### Cards (dashboard only)
 
@@ -67,13 +68,13 @@ So create the automations for **Opladen** and **Ontladen** first, then the price
 
 ### What is needed for what
 
-| Component | Zonneplan | Marstek Modbus | P1 meter | Solar panels | Helpers | Cards |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Marstek - Opladen / Ontladen | | ✅ | | | | |
-| Charge at lowest price | ✅ | ✅ | | ✅ | ✅ | |
-| Discharge at highest price | ✅ | ✅ | | | ✅ | |
-| Air conditioning temperature and humidity | | | | | | |
-| Energy dashboard | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Component | Zonneplan | Marstek Modbus | P1 meter | Solar panels | Solcast | Helpers | Cards |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Marstek - Opladen / Ontladen | | ✅ | | | | | |
+| Charge at lowest price | ✅ | ✅ | | ✅ | | ✅ | |
+| Discharge at highest price | ✅ | ✅ | | | | ✅ | |
+| Air conditioning temperature and humidity | | | | | | | |
+| Energy dashboard | ✅ | ✅ | ✅ | ✅ | optional | ✅ | ✅ |
 
 The air conditioning blueprint only needs an air conditioner (`climate` entity) and a temperature and humidity sensor.
 
@@ -246,6 +247,8 @@ The calculation is: *current grid power / maximum power × 100*. Both import and
 ### Home Assistant Energy dashboard
 
 The *Power sources*, *Energy usage*, *Energy distribution* and *Solar forecast* cards use data from the built-in Energy dashboard. Set that up first via **Settings → Dashboards → Energy** (grid, solar panels and battery), otherwise these cards stay empty.
+
+For the *Solar forecast* card, add a **solar production forecast** to your solar panels in the Energy settings, for example from [Solcast](https://github.com/BJReplay/ha-solcast-solar). Without a forecast the card only shows actual production.
 
 ### Installation
 
