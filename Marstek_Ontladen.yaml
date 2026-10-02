@@ -8,6 +8,7 @@ blueprint:
     - Na 10 seconden wordt het ontlaadvermogen op 2500 W gezet, de batterijen gaan op *discharge* en RS485-besturing gaat aan.
     - Na de ingestelde ontlaadduur gaan de batterijen weer in standby, de werkmodus blijft *anti_feed* en RS485-besturing gaat uit.
   domain: automation
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Ontladen.yaml
   input:
     force_mode_selects:
       name: Force mode
