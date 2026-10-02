@@ -309,7 +309,58 @@ A complete list is at the top of [`EnergyDashboad.txt`](EnergyDashboad.txt). In 
 | Other template sensors | `sensor.zonne_zelfverbruik_percentage`, `sensor.meterkast_belasting` |
 | Buttons | `automation.marstek_opladen`, `automation.marstek_ontladen` |
 
-Only one battery, or missing a sensor? Remove the card that uses it.
+Missing a sensor? Remove the card that uses it. A different number of batteries? See [Number of batteries](#number-of-batteries).
+
+---
+
+## Number of batteries
+
+Everything in this repository is set up for **2 batteries** (Marstek Venus E, 5.12 kWh and 2500 W each). If you have 1, 3 or 4, adjust the following.
+
+### Blueprints: nothing to change
+
+*Opladen*, *Ontladen* and *Veiligheid* let you select multiple entities in every field. Just pick one per battery. The price-based blueprints use a single SoC sensor (the average), so they work with any number of batteries.
+
+### Helpers ([`EnergyHelpers.yaml`](EnergyHelpers.yaml))
+
+Four sensors add up the batteries. They are marked with `AANTAL BATTERIJEN` (number of batteries) in the file.
+
+| Sensor | 1 battery | 3 or 4 batteries |
+|---|---|---|
+| Marstek Total AC Power | Remove the `marstek_2` line | Add a line for `marstek_3` (and `marstek_4`) |
+| Marstek Average Battery SoC | Remove the `marstek_2` line and change `/ 2` to `/ 1` | Add lines and change `/ 2` to `/ 3` or `/ 4` |
+| Marstek Total Stored Energy | Remove the `marstek_2` line | Add a line for `marstek_3` (and `marstek_4`) |
+| Marstek Total Discharging Energy Today | Remove the `_2` line | Add a line for `_3` (and `_4`) |
+
+> ⚠️ Pay special attention to the `/ 2` divisor in the average SoC. If you leave it with 1 battery, you'll see half the real percentage. *Charge at lowest price* would then think a full battery is at 50% and start charging when it shouldn't.
+
+Example for 3 batteries (average SoC):
+
+```yaml
+state: >
+  {{
+    (
+      (
+        (states('sensor.marstek_1_battery_soc') | float(0)) +
+        (states('sensor.marstek_2_battery_soc') | float(0)) +
+        (states('sensor.marstek_3_battery_soc') | float(0))
+      ) / 3
+    ) | round(1)
+  }}
+```
+
+### Dashboard ([`EnergyDashboad.txt`](EnergyDashboad.txt))
+
+| Component | What to change | 1 battery | 2 batteries | 3 batteries | 4 batteries |
+|---|---|---|---|---|---|
+| Battery cards (*Marstek voor* / *achter*) | One card per battery | Remove the *Marstek achter* card | – | Copy a card, fill in `marstek_3` | Copy two cards |
+| *Opgeslagen* (stored) | `max_value` and last colour threshold (kWh) | 5.12 | 10.24 | 15.36 | 20.48 |
+| *Dagelijks Ontladen* (discharged today) | `max_value` and last colour threshold (kWh) | 5.12 | 10.24 | 15.36 | 20.48 |
+| *Actuele ontlaad* (current discharge) | `max_value` and last colour threshold (W) | 2500 | 5000 | 7500 | 10000 |
+
+You can scale the intermediate colour thresholds (e.g. 3 and 7 kWh for *Opgeslagen*) proportionally.
+
+Different model? Use that model's capacity (kWh) and maximum power (W) instead of 5.12 kWh and 2500 W.
 
 ---
 
