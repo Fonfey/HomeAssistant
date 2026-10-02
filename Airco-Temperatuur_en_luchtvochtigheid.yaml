@@ -10,6 +10,7 @@ blueprint:
     - temperatuur in orde en luchtvochtigheid tussen 48 en 52%: airco uit.
     Op de eindtijd gaat de airco altijd uit.
   domain: automation
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Airco-Temperatuur_en_luchtvochtigheid.yaml
   input:
     climate_entity:
       name: Airco
