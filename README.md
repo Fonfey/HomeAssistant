@@ -2,7 +2,7 @@
 
 Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs, plus een blueprint om een **airco** te regelen op temperatuur en luchtvochtigheid.
 
-![Energie-dashboard]([dashboard.png](https://github.com/Fonfey/HomeAssistant/blob/main/Energy%20Dashboard.jpg))
+![Energie-dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 
 ---
 
