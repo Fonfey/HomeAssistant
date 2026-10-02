@@ -175,7 +175,7 @@ Een dashboard met de actuele stroomprijs, het goedkoopste en duurste uur van van
 
 ### Entiteiten om aan te passen
 
-Bovenaan [`energie_dashboard.yaml`](energydashboard.txt) staat een volledige lijst. In het kort:
+Bovenaan [`energie_dashboard.yaml`](EnergyDashboad.txt) staat een volledige lijst. In het kort:
 
 | Onderdeel | Entiteiten |
 |---|---|
