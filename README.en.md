@@ -55,16 +55,16 @@ So create the automations for **Opladen** and **Ontladen** first, then the price
 | [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus) | Controlling the batteries: *force mode*, *RS485 control mode*, *charge/discharge power* and daily discharge energy | HACS → Integrations |
 | P1 meter, e.g. [DSMR Smart Meter](https://www.home-assistant.io/integrations/dsmr/) or [HomeWizard](https://www.home-assistant.io/integrations/homewizard/) | Power from and to the grid (`sensor.p1_meter_vermogen`) | Built into Home Assistant |
 | Your solar inverter | Solar panel power (`sensor.pv_power`) | Depends on your brand |
-| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar) | Expected solar production for the *Solar forecast* card (optional) | HACS → Integrations |
 
-### Cards (dashboard only)
+### For the dashboard
 
-| Card | Install via |
+| Card / integration | Install via |
 |---|---|
 | [Mushroom](https://github.com/piitaya/lovelace-mushroom) | HACS → Frontend |
 | [B2500D Card](https://github.com/Neisi/b2500d-card) | HACS → Frontend |
 | [Entity Progress Card](https://github.com/francois-le-ko4la/lovelace-entity-progress-card) | HACS → Frontend |
 | [ApexCharts Card](https://github.com/RomRider/apexcharts-card) | HACS → Frontend |
+| [Solcast PV Forecast](https://github.com/BJReplay/ha-solcast-solar), for the *Solar forecast* card (optional) | HACS → Integrations |
 
 ### What is needed for what
 
