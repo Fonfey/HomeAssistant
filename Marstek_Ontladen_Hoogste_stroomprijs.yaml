@@ -9,6 +9,7 @@ blueprint:
     Als alles klopt, wordt de ontlaad-automation gestart.
     Gemaakt voor de Zonneplan-integratie.
   domain: automation
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Ontladen_Hoogste_stroomprijs.yaml
   input:
     tariff_sensor:
       name: Huidig stroomtarief
