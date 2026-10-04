@@ -74,7 +74,7 @@ There is also **Marstek - Veiligheid** (safety): a safety net that restores the 
 | Component | Zonneplan | Marstek Modbus | P1 meter | Solar panels | Solcast | Helpers |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
 | Marstek - Opladen / Ontladen | | ✅ | | | | |
-| Charge at lowest price | ✅ | ✅ | | ✅ | | ✅ |
+| Charge at lowest price | ✅ | ✅ | | optional | | ✅ |
 | Discharge at highest price | ✅ | ✅ | | | | ✅ |
 | Marstek - Veiligheid (safety) | | ✅ | | | | |
 | Air conditioning temperature and humidity | | | | | | |
@@ -147,14 +147,14 @@ Checks on every price change whether the battery should start charging. The char
 
 - the current hour is the **cheapest hour of today**;
 - the battery is **below 60%**;
-- the solar panels produce **less than 1000 W**;
+- the solar panels produce **less than 1000 W** (only if you selected a solar power sensor);
 - the charge automation is not already running.
 
 | Field (Dutch) | Meaning | Example |
 |---|---|---|
 | Huidig stroomtarief | Current electricity price | `sensor.zonneplan_current_electricity_tariff` |
 | Batterij laadniveau (SoC) | Battery state of charge | `sensor.marstek_average_battery_soc` |
-| Zonnepanelen vermogen | Solar panel power | `sensor.pv_power` |
+| Zonnepanelen vermogen (optioneel) | Solar panel power (optional) | `sensor.pv_power`. Leave empty if you don't have solar panels |
 | Laad-automation | Charge automation | `automation.marstek_opladen` |
 
 ## Marstek - Ontladen bij hoogste stroomprijs (discharge at highest price)

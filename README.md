@@ -72,7 +72,7 @@ Daarnaast is er **Marstek - Veiligheid**: een vangnet dat de batterijen terugzet
 | Onderdeel | Zonneplan | Marstek Modbus | P1-meter | Zonnepanelen | Solcast | Helpers |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|
 | Marstek - Opladen / Ontladen | | ✅ | | | | |
-| Laden bij laagste stroomprijs | ✅ | ✅ | | ✅ | | ✅ |
+| Laden bij laagste stroomprijs | ✅ | ✅ | | optioneel | | ✅ |
 | Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ |
 | Marstek - Veiligheid | | ✅ | | | | |
 | Airco Temperatuur en luchtvochtigheid | | | | | | |
@@ -145,14 +145,14 @@ Controleert bij elke prijswijziging of de batterij moet gaan laden. De laad-auto
 
 - het huidige uur het **goedkoopste uur van vandaag** is;
 - de batterij **onder 60%** zit;
-- de zonnepanelen **minder dan 1000 W** leveren;
+- de zonnepanelen **minder dan 1000 W** leveren (alleen als je een zonnepanelen-sensor hebt gekozen);
 - de laad-automation niet al bezig is.
 
 | Veld | Voorbeeld |
 |---|---|
 | Huidig stroomtarief | `sensor.zonneplan_current_electricity_tariff` |
 | Batterij laadniveau (SoC) | `sensor.marstek_average_battery_soc` |
-| Zonnepanelen vermogen | `sensor.pv_power` |
+| Zonnepanelen vermogen (optioneel) | `sensor.pv_power`. Leeg laten als je geen zonnepanelen hebt |
 | Laad-automation | `automation.marstek_opladen` |
 
 ## Marstek - Ontladen bij hoogste stroomprijs

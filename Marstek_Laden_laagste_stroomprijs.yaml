@@ -5,7 +5,7 @@ blueprint:
     De automation controleert bij elke prijswijziging of:
     - het huidige uur het goedkoopste uur van vandaag is;
     - de batterij onder de 60% zit;
-    - de zonnepanelen minder dan 1000 W leveren;
+    - de zonnepanelen minder dan 1000 W leveren (alleen als je een zonnepanelen-sensor hebt gekozen);
     - de laad-automation niet al bezig is.
     Als alles klopt, wordt de laad-automation gestart.
     Gemaakt voor de Zonneplan-integratie.
@@ -32,11 +32,13 @@ blueprint:
           filter:
             - domain: sensor
     pv_power_sensor:
-      name: Zonnepanelen vermogen
+      name: Zonnepanelen vermogen (optioneel)
       description: >-
-        De sensor met het huidige vermogen van je zonnepanelen in watt. Er wordt alleen geladen als de
-        zonnepanelen minder dan 1000 W leveren, zodat je niet duur laadt
-        terwijl de zon het gratis kan doen.
+        De sensor met het huidige vermogen van je zonnepanelen in watt. Er
+        wordt dan alleen geladen als de zonnepanelen minder dan 1000 W
+        leveren, zodat je niet duur laadt terwijl de zon het gratis kan doen.
+        Heb je geen zonnepanelen, laat dit dan leeg.
+      default: []
       selector:
         entity:
           filter:
@@ -56,6 +58,7 @@ mode: single
 
 variables:
   tariff_sensor: !input tariff_sensor
+  pv_power_sensor: !input pv_power_sensor
   # Zonneplan: forecast-prijzen staan in 1/10.000.000 euro
   price_factor: 10000000
 
@@ -67,9 +70,14 @@ conditions:
   - condition: numeric_state
     entity_id: !input battery_soc_sensor
     below: 60
-  - condition: numeric_state
-    entity_id: !input pv_power_sensor
-    below: 1000
+  # Zonnepanelen onder 1000 W (overgeslagen als er geen sensor is gekozen)
+  - condition: template
+    value_template: >-
+      {% if pv_power_sensor in ['', none, []] %}
+        true
+      {% else %}
+        {{ is_number(states(pv_power_sensor)) and states(pv_power_sensor) | float < 1000 }}
+      {% endif %}
   - condition: template
     value_template: >-
       {% set vandaag = now().date().isoformat() %}
