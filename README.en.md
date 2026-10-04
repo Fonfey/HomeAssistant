@@ -109,7 +109,7 @@ Force-charges the batteries and then returns them to normal mode.
 1. Batteries to *standby*, work mode *anti_feed*, RS485 control off
 2. Wait 10 seconds
 3. Charge power set to the configured value, batteries to *charge*, RS485 control on
-4. Charge for the configured duration
+4. Charge for the configured duration, or shorter: as soon as all batteries reach 100%, charging stops (if you selected state of charge sensors)
 5. Back to *standby*, work mode *anti_feed*, RS485 control off
 
 **Settings** (you can select multiple batteries for each entity)
@@ -122,6 +122,7 @@ Force-charges the batteries and then returns them to normal mode.
 | Laadvermogen-entiteiten | Charge power entities | `number.marstek_venus_modbus_set_charge_power` |
 | Laadvermogen per batterij | Charge power per battery | Default 2500 W, freely adjustable |
 | Laadduur | Charge duration | Default 1 hour |
+| Laadniveau-sensoren (optioneel) | State of charge sensors (optional) | `sensor.marstek_1_battery_soc`. One per battery; charging stops as soon as all batteries reach 100%. Empty = always the full duration |
 
 **Choosing the charge and discharge power**
 

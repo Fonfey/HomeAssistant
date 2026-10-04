@@ -107,7 +107,7 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 1. Batterijen naar *standby*, werkmodus *anti_feed*, RS485-besturing uit
 2. 10 seconden wachten
 3. Laadvermogen op de ingestelde waarde, batterijen op *charge*, RS485-besturing aan
-4. Laden gedurende de ingestelde laadduur
+4. Laden gedurende de ingestelde laadduur, of korter: zodra alle batterijen 100% zijn stopt het laden direct (als je laadniveau-sensoren hebt gekozen)
 5. Terug naar *standby*, werkmodus *anti_feed*, RS485-besturing uit
 
 **Instellingen** (bij elke entiteit kun je meerdere batterijen kiezen)
@@ -120,6 +120,7 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 | Laadvermogen-entiteiten | `number.marstek_venus_modbus_set_charge_power` |
 | Laadvermogen per batterij | Standaard 2500 W, zelf in te vullen |
 | Laadduur | Standaard 1 uur |
+| Laadniveau-sensoren (optioneel) | `sensor.marstek_1_battery_soc`. Eén per batterij; laden stopt zodra alle batterijen 100% zijn. Leeg = altijd de volledige laadduur |
 
 **Laad- en ontlaadvermogen kiezen**
 
