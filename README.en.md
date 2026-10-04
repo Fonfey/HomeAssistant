@@ -99,6 +99,18 @@ Click a button below, or in Home Assistant go to **Settings → Automations & sc
 
 After an update on GitHub, click **Re-import blueprint** on the blueprint in Home Assistant to get the latest version.
 
+**Entity pickers only show matching entities**, so you can't select the wrong one, even if your entity names are different:
+
+| Field | Only shows |
+|---|---|
+| Force mode, Werkmodus, RS485-besturing, (Ont)laadvermogen-entiteiten | Entities from the [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus) integration |
+| Huidig stroomtarief | Sensors from the [Zonneplan ONE](https://github.com/fsaris/home-assistant-zonneplan-one) integration |
+| Laadniveau (SoC) | Sensors with device class *Battery* |
+| Zonnepanelen vermogen | Sensors with device class *Power* |
+| Temperature / humidity sensor | Sensors with device class *Temperature* / *Humidity* |
+
+Don't see your sensor in the list? It probably has no (or the wrong) device class. For a custom template sensor, add `device_class: battery` or `device_class: power`; for other sensors you can often set it in the entity settings (**Show as**).
+
 ---
 
 ## Marstek - Opladen (charge)

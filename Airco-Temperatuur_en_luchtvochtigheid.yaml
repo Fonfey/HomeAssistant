@@ -29,6 +29,7 @@ blueprint:
         entity:
           filter:
             - domain: sensor
+              device_class: temperature
     humidity_sensor:
       name: Luchtvochtigheidssensor
       description: >-
@@ -38,6 +39,7 @@ blueprint:
         entity:
           filter:
             - domain: sensor
+              device_class: humidity
     max_temperature:
       name: Maximale temperatuur
       description: >-

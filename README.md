@@ -97,6 +97,18 @@ Klik op een knop hieronder, of ga in Home Assistant naar **Instellingen → Auto
 
 Na een update op GitHub kun je in Home Assistant bij de blueprint op **Opnieuw importeren** klikken om de nieuwste versie op te halen.
 
+**Keuzelijsten tonen alleen passende entiteiten.** Zo kun je geen verkeerde entiteit kiezen, ook als de namen bij jou anders zijn:
+
+| Veld | Toont alleen |
+|---|---|
+| Force mode, Werkmodus, RS485-besturing, (Ont)laadvermogen-entiteiten | Entiteiten van de [Marstek Venus Modbus](https://github.com/ViperRNMC/marstek_venus_modbus)-integratie |
+| Huidig stroomtarief | Sensoren van de [Zonneplan ONE](https://github.com/fsaris/home-assistant-zonneplan-one)-integratie |
+| Laadniveau (SoC) | Sensoren met apparaatklasse *Batterij* |
+| Zonnepanelen vermogen | Sensoren met apparaatklasse *Vermogen* |
+| Temperatuur- / luchtvochtigheidssensor | Sensoren met apparaatklasse *Temperatuur* / *Vochtigheid* |
+
+Zie je je sensor niet in de lijst? Dan heeft hij waarschijnlijk geen (juiste) apparaatklasse. Bij een eigen template-sensor voeg je `device_class: battery` of `device_class: power` toe; bij andere sensoren kun je de apparaatklasse vaak instellen via de instellingen van de entiteit (**Weergeven als**).
+
 ---
 
 ## Marstek - Opladen

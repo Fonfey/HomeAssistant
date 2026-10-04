@@ -20,7 +20,8 @@ blueprint:
       selector:
         entity:
           filter:
-            - domain: sensor
+            - integration: zonneplan_one
+              domain: sensor
     battery_soc_sensor:
       name: Batterij laadniveau (SoC)
       description: >-
@@ -30,6 +31,7 @@ blueprint:
         entity:
           filter:
             - domain: sensor
+              device_class: battery
     discharge_automation:
       name: Ontlaad-automation
       description: >-

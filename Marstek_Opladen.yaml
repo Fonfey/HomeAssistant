@@ -20,7 +20,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: select
+            - integration: marstek_modbus
+              domain: select
     work_mode_selects:
       name: Werkmodus (user work mode)
       description: >-
@@ -31,7 +32,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: select
+            - integration: marstek_modbus
+              domain: select
     rs485_switches:
       name: RS485-besturing
       description: >-
@@ -42,7 +44,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: switch
+            - integration: marstek_modbus
+              domain: switch
     charge_power_numbers:
       name: Laadvermogen-entiteiten
       description: >-
@@ -52,7 +55,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: number
+            - integration: marstek_modbus
+              domain: number
     charge_power_value:
       name: Laadvermogen per batterij
       description: >-
@@ -91,6 +95,7 @@ blueprint:
           multiple: true
           filter:
             - domain: sensor
+              device_class: battery
 
     charge_below:
       name: Alleen laden onder (optioneel)
@@ -121,6 +126,7 @@ blueprint:
           multiple: true
           filter:
             - domain: sensor
+              device_class: power
 
 mode: single
 

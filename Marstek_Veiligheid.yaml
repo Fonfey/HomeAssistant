@@ -21,7 +21,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: select
+            - integration: marstek_modbus
+              domain: select
     work_mode_selects:
       name: Werkmodus (user work mode)
       description: >-
@@ -31,7 +32,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: select
+            - integration: marstek_modbus
+              domain: select
     rs485_switches:
       name: RS485-besturing
       description: >-
@@ -41,7 +43,8 @@ blueprint:
         entity:
           multiple: true
           filter:
-            - domain: switch
+            - integration: marstek_modbus
+              domain: switch
     charge_automation:
       name: Laad-automation
       description: >-
