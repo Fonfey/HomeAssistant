@@ -37,10 +37,12 @@ blueprint:
         De sensor met het huidige vermogen van je zonnepanelen in watt. Er
         wordt dan alleen geladen als de zonnepanelen minder dan 1000 W
         leveren, zodat je niet duur laadt terwijl de zon het gratis kan doen.
+        Heb je meerdere omvormers, kies ze dan allemaal; ze worden opgeteld.
         Heb je geen zonnepanelen, laat dit dan leeg.
       default: []
       selector:
         entity:
+          multiple: true
           filter:
             - domain: sensor
     charge_automation:
@@ -73,10 +75,14 @@ conditions:
   # Zonnepanelen onder 1000 W (overgeslagen als er geen sensor is gekozen)
   - condition: template
     value_template: >-
-      {% if pv_power_sensor in ['', none, []] %}
+      {% set pv = [pv_power_sensor] if pv_power_sensor is string else (pv_power_sensor or []) %}
+      {% set pv = pv | reject('eq', '') | list %}
+      {% if pv | count == 0 %}
         true
       {% else %}
-        {{ is_number(states(pv_power_sensor)) and states(pv_power_sensor) | float < 1000 }}
+        {% set waarden = pv | map('states') | list %}
+        {{ waarden | select('is_number') | list | count == pv | count
+           and waarden | map('float') | sum < 1000 }}
       {% endif %}
   - condition: template
     value_template: >-

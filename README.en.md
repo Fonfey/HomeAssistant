@@ -154,7 +154,7 @@ Checks on every price change whether the battery should start charging. The char
 |---|---|---|
 | Huidig stroomtarief | Current electricity price | `sensor.zonneplan_current_electricity_tariff` |
 | Batterij laadniveau (SoC) | Battery state of charge | `sensor.marstek_average_battery_soc` |
-| Zonnepanelen vermogen (optioneel) | Solar panel power (optional) | `sensor.pv_power`. Leave empty if you don't have solar panels |
+| Zonnepanelen vermogen (optioneel) | Solar panel power (optional) | `sensor.pv_power`. Multiple inverters are added up. Leave empty if you don't have solar panels |
 | Laad-automation | Charge automation | `automation.marstek_opladen` |
 
 ## Marstek - Ontladen bij hoogste stroomprijs (discharge at highest price)
