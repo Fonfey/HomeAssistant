@@ -6,7 +6,7 @@ blueprint:
     Wat er gebeurt:
     - De batterijen gaan in standby, de werkmodus wordt *anti_feed* en RS485-besturing gaat uit.
     - Na 10 seconden wordt het laadvermogen ingesteld, de batterijen gaan op *charge* en RS485-besturing gaat aan.
-    - Na de ingestelde laadduur, of eerder zodra alle batterijen 100% zijn, gaan de batterijen weer in standby, de werkmodus blijft *anti_feed* en RS485-besturing gaat uit.
+    - Na de ingestelde laadduur, of eerder zodra alle batterijen 100% zijn of de zonnepanelen meer dan 1000 W leveren, gaan de batterijen weer in standby, de werkmodus blijft *anti_feed* en RS485-besturing gaat uit.
   domain: automation
   source_url: https://github.com/Fonfey/HomeAssistant/blob/main/Marstek_Opladen.yaml
   input:
@@ -91,10 +91,26 @@ blueprint:
           filter:
             - domain: sensor
 
+    pv_power_sensors:
+      name: Zonnepanelen vermogen (optioneel)
+      description: >-
+        De sensor met het huidige vermogen van je zonnepanelen in watt. Het
+        laden stopt dan eerder zodra de zonnepanelen meer dan 1000 W leveren,
+        zodat je niet van het net laadt terwijl de zon het gratis kan doen.
+        Heb je meerdere omvormers, kies ze dan allemaal; ze worden opgeteld.
+        Laat leeg om hier niet op te letten.
+      default: []
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: sensor
+
 mode: single
 
 variables:
   battery_soc_sensors: !input battery_soc_sensors
+  pv_power_sensors: !input pv_power_sensors
 
 triggers: []
 
@@ -131,13 +147,19 @@ actions:
     target:
       entity_id: !input rs485_switches
 
-  # Laden gedurende de ingestelde laadduur, of tot alle batterijen 100% zijn
+  # Laden gedurende de ingestelde laadduur, of korter: tot alle batterijen
+  # 100% zijn of tot de zonnepanelen meer dan 1000 W leveren
   - if:
       - condition: template
-        value_template: "{{ battery_soc_sensors | count > 0 }}"
+        value_template: >-
+          {{ battery_soc_sensors | count > 0 or pv_power_sensors | count > 0 }}
     then:
       - wait_template: >-
-          {{ battery_soc_sensors | map('states') | map('float', 0) | min >= 100 }}
+          {% set vol = battery_soc_sensors | count > 0 and
+             battery_soc_sensors | map('states') | map('float', 0) | min >= 100 %}
+          {% set zon = pv_power_sensors | count > 0 and
+             pv_power_sensors | map('states') | map('float', 0) | sum >= 1000 %}
+          {{ vol or zon }}
         timeout: !input charge_duration
         continue_on_timeout: true
     else:
