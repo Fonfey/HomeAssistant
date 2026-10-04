@@ -3,6 +3,7 @@ blueprint:
   description: |
     Laadt de Marstek-batterijen met het ingestelde laadvermogen per batterij (standaard 2500 W) gedurende de ingestelde laadduur (standaard 1 uur) en zet ze daarna terug in de normale stand.
     Deze automation heeft geen eigen trigger. Hij wordt gestart door een andere automation, bijvoorbeeld de blueprint **Marstek - Laden bij laagste stroomprijs**.
+    Heb je laadniveau-sensoren gekozen, dan wordt er alleen geladen als een batterij onder het ingestelde percentage zit.
     Wat er gebeurt:
     - De batterijen gaan in standby, de werkmodus wordt *anti_feed* en RS485-besturing gaat uit.
     - Na 10 seconden wordt het laadvermogen ingesteld, de batterijen gaan op *charge* en RS485-besturing gaat aan.
@@ -91,6 +92,21 @@ blueprint:
           filter:
             - domain: sensor
 
+    charge_below:
+      name: Alleen laden onder (optioneel)
+      description: >-
+        Er wordt alleen geladen als minstens één batterij onder dit
+        percentage zit. Werkt alleen als je hierboven laadniveau-sensoren hebt
+        gekozen. Standaard 100%: dan wordt er altijd geladen, behalve als alle
+        batterijen al vol zijn.
+      default: 100
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
     pv_power_sensors:
       name: Zonnepanelen vermogen (optioneel)
       description: >-
@@ -111,10 +127,18 @@ mode: single
 variables:
   battery_soc_sensors: !input battery_soc_sensors
   pv_power_sensors: !input pv_power_sensors
+  charge_below: !input charge_below
 
 triggers: []
 
 actions:
+  # Alleen laden als minstens één batterij onder het ingestelde percentage zit
+  # (overgeslagen als er geen laadniveau-sensoren zijn gekozen)
+  - condition: template
+    value_template: >-
+      {{ battery_soc_sensors | count == 0 or
+         battery_soc_sensors | map('states') | map('float', 0) | min < charge_below | float }}
+
   # Voorbereiden: standby, anti_feed en RS485 uit
   - action: select.select_option
     target:

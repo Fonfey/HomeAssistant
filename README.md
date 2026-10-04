@@ -104,6 +104,7 @@ Na een update op GitHub kun je in Home Assistant bij de blueprint op **Opnieuw i
 Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 
 **Wat er gebeurt**
+0. Alleen als minstens één batterij onder het ingestelde percentage zit (als je laadniveau-sensoren hebt gekozen)
 1. Batterijen naar *standby*, werkmodus *anti_feed*, RS485-besturing uit
 2. 10 seconden wachten
 3. Laadvermogen op de ingestelde waarde, batterijen op *charge*, RS485-besturing aan
@@ -121,6 +122,7 @@ Laadt de batterijen geforceerd en zet ze daarna terug in de normale stand.
 | Laadvermogen per batterij | Standaard 2500 W, zelf in te vullen |
 | Laadduur | Standaard 1 uur |
 | Laadniveau-sensoren (optioneel) | `sensor.marstek_1_battery_soc`. Eén per batterij; laden stopt zodra alle batterijen 100% zijn. Leeg = altijd de volledige laadduur |
+| Alleen laden onder (optioneel) | Standaard 100%. Er wordt alleen geladen als minstens één batterij onder dit percentage zit. Werkt alleen met laadniveau-sensoren |
 | Zonnepanelen vermogen (optioneel) | `sensor.pv_power`. Laden stopt zodra de zonnepanelen meer dan 1000 W leveren. Meerdere omvormers worden opgeteld. Leeg = hier niet op letten |
 
 **Laad- en ontlaadvermogen kiezen**

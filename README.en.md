@@ -106,6 +106,7 @@ After an update on GitHub, click **Re-import blueprint** on the blueprint in Hom
 Force-charges the batteries and then returns them to normal mode.
 
 **What happens**
+0. Only if at least one battery is below the configured percentage (if you selected state of charge sensors)
 1. Batteries to *standby*, work mode *anti_feed*, RS485 control off
 2. Wait 10 seconds
 3. Charge power set to the configured value, batteries to *charge*, RS485 control on
@@ -123,6 +124,7 @@ Force-charges the batteries and then returns them to normal mode.
 | Laadvermogen per batterij | Charge power per battery | Default 2500 W, freely adjustable |
 | Laadduur | Charge duration | Default 1 hour |
 | Laadniveau-sensoren (optioneel) | State of charge sensors (optional) | `sensor.marstek_1_battery_soc`. One per battery; charging stops as soon as all batteries reach 100%. Empty = always the full duration |
+| Alleen laden onder (optioneel) | Only charge below (optional) | Default 100%. Only charges if at least one battery is below this percentage. Requires state of charge sensors |
 | Zonnepanelen vermogen (optioneel) | Solar panel power (optional) | `sensor.pv_power`. Charging stops as soon as solar produces more than 1000 W. Multiple inverters are added up. Empty = ignore |
 
 **Choosing the charge and discharge power**
