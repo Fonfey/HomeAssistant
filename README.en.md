@@ -385,3 +385,9 @@ Different model? Use that model's capacity (kWh) and maximum power (W) instead o
 - The Zonneplan forecast gives prices in 1/10,000,000 euro; the blueprints convert this automatically.
 - When you use these blueprints, disable any old automations that do the same thing, so they don't run at the same time.
 - Use at your own risk. After setting up, check that your batteries behave as expected.
+
+---
+
+## Contributing and license
+
+Questions, bugs and improvements are welcome; please read [CONTRIBUTING.md](CONTRIBUTING.md) first. This project is licensed under the [MIT License](LICENSE).

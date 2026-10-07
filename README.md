@@ -383,3 +383,9 @@ Heb je een ander model? Reken dan met de capaciteit (kWh) en het maximale vermog
 - De Zonneplan-forecast geeft prijzen in 1/10.000.000 euro; de blueprints rekenen dit zelf om.
 - Gebruik je deze blueprints, zet dan je oude losse automations met dezelfde functie uit, zodat ze niet tegelijk starten.
 - Gebruik op eigen risico. Controleer na het instellen of je batterijen doen wat je verwacht.
+
+---
+
+## Bijdragen en licentie
+
+Vragen, bugs en verbeteringen zijn welkom; lees eerst [CONTRIBUTING.md](CONTRIBUTING.md). Dit project valt onder de [MIT-licentie](LICENSE).
