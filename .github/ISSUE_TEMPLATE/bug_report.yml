@@ -1,0 +1,99 @@
+name: 🐞 Bug melden / Report a bug
+description: Iets werkt niet zoals verwacht. / Something doesn't work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bedankt voor je melding! Haal persoonlijke gegevens (adressen, tokens, IP-adressen) weg voordat je logboeken of traces plakt.
+        Thanks for reporting! Please remove personal data before pasting logs or traces. English is fine.
+
+  - type: dropdown
+    id: onderdeel
+    attributes:
+      label: Onderdeel / Component
+      description: Welke blueprint of welk bestand betreft het?
+      options:
+        - Marstek - Opladen
+        - Marstek - Ontladen
+        - Marstek - Laden bij laagste stroomprijs
+        - Marstek - Ontladen bij hoogste stroomprijs
+        - Marstek - Veiligheid
+        - Airco Temperatuur en luchtvochtigheid
+        - Energie-dashboard (EnergyDashboard.yaml)
+        - Helpers (EnergyHelpers.yaml)
+        - README / documentatie
+        - Anders / Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: beschrijving
+    attributes:
+      label: Wat gebeurt er? / What happens?
+      description: Beschrijf het probleem en wat je in plaats daarvan verwachtte.
+      placeholder: "Na een herstart van Home Assistant blijft de batterij op 'charge' staan, terwijl ik verwachtte dat Veiligheid hem op standby zou zetten."
+    validations:
+      required: true
+
+  - type: textarea
+    id: stappen
+    attributes:
+      label: Stappen om te reproduceren / Steps to reproduce
+      placeholder: |
+        1. Automation 'Opladen' starten met 2000 W voor 60 minuten
+        2. Home Assistant herstarten
+        3. ...
+    validations:
+      required: false
+
+  - type: input
+    id: ha_versie
+    attributes:
+      label: Versie van Home Assistant / Home Assistant version
+      description: Instellingen → Over
+      placeholder: "2026.10.0"
+    validations:
+      required: true
+
+  - type: input
+    id: integratie_versies
+    attributes:
+      label: Versies van integraties / Integration versions
+      description: Marstek Venus Modbus, Zonneplan ONE en eventueel kaarten (zie HACS)
+      placeholder: "Marstek Venus Modbus 1.2.3, Zonneplan ONE 2025.x"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: batterijen
+    attributes:
+      label: Aantal batterijen / Number of batteries
+      options:
+        - "1"
+        - "2"
+        - "3 of meer / 3 or more"
+        - Niet van toepassing / Not applicable
+    validations:
+      required: false
+
+  - type: textarea
+    id: trace
+    attributes:
+      label: Trace of logboek / Trace or log
+      description: |
+        Trace: Instellingen → Automatiseringen → je automation → ⋮ → Traces → ⋮ → Trace downloaden.
+        Je kunt het bestand ook als bijlage toevoegen.
+      render: yaml
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: controle
+    attributes:
+      label: Controle / Checklist
+      options:
+        - label: Ik heb de laatste versie van de blueprint opnieuw geïmporteerd. / I re-imported the latest version.
+          required: false
+        - label: Ik heb gezocht in de bestaande issues. / I searched existing issues.
+          required: true
