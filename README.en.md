@@ -4,6 +4,8 @@
 
 Blueprints and a dashboard for Home Assistant to smartly charge and discharge a **Marstek Venus home battery** based on the **Zonneplan** electricity price, plus a blueprint to control an **air conditioner** based on temperature and humidity.
 
+> 📖 Background on my blog (in Dutch): [Smart home battery charging with Home Assistant and Zonneplan](https://fonferek.cloud/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). More Home Assistant posts at [fonferek.cloud](https://fonferek.cloud/onderwerpen/homeassistant/).
+
 ![Energy dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 
 > **Note:** the blueprints and dashboard are in Dutch. The field names in Home Assistant are shown in Dutch below, with the English meaning next to them. [Zonneplan](https://www.zonneplan.nl/) is a Dutch energy supplier with dynamic hourly prices.

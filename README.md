@@ -4,6 +4,8 @@
 
 Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs, plus een blueprint om een **airco** te regelen op temperatuur en luchtvochtigheid.
 
+> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.cloud/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). Meer Home Assistant-blogs op [fonferek.cloud](https://fonferek.cloud/onderwerpen/homeassistant/).
+
 ![Energie-dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 
 ---
