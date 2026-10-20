@@ -1,10 +1,10 @@
 🇳🇱 **Nederlands** | 🇬🇧 [English](README.en.md)
 
-# Home Assistant – Marstek thuisbatterij, Zonneplan & airco
+# Home Assistant – Marstek thuisbatterij & Zonneplan
 
-Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs, plus een blueprint om een **airco** te regelen op temperatuur en luchtvochtigheid.
+Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs.
 
-> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.cloud/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). Meer Home Assistant-blogs op [fonferek.cloud](https://fonferek.cloud/onderwerpen/homeassistant/).
+> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). Meer Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/).
 
 ![Energie-dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 
@@ -19,7 +19,6 @@ Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatt
 | [`Marstek_Laden_laagste_stroomprijs.yaml`](Marstek_Laden_laagste_stroomprijs.yaml) | Blueprint | Start het opladen op het goedkoopste uur van de dag |
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Start het ontladen op het duurste uur van de dag |
 | [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Zet de batterijen terug naar standby als ze blijven hangen in laden of ontladen |
-| [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Regelt een airco op temperatuur en luchtvochtigheid binnen een tijdvenster |
 | [`EnergyDashboard.yaml`](EnergyDashboard.yaml) | Dashboard | Overzicht van stroomprijs, batterijen, zonnepanelen en verbruik |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template-sensoren | Helpers die het dashboard en de blueprints nodig hebben |
 
@@ -77,10 +76,7 @@ Daarnaast is er **Marstek - Veiligheid**: een vangnet dat de batterijen terugzet
 | Laden bij laagste stroomprijs | ✅ | ✅ | | optioneel | | ✅ |
 | Ontladen bij hoogste stroomprijs | ✅ | ✅ | | | | ✅ |
 | Marstek - Veiligheid | | ✅ | | | | |
-| Airco Temperatuur en luchtvochtigheid | | | | | | |
 | Energie-dashboard | ✅ | ✅ | ✅ | ✅ | optioneel | ✅ |
-
-De airco-blueprint heeft alleen een airco (`climate`-entiteit) en een temperatuur- en luchtvochtigheidssensor nodig.
 
 ---
 
@@ -95,7 +91,6 @@ Klik op een knop hieronder, of ga in Home Assistant naar **Instellingen → Auto
 | Marstek - Laden bij laagste stroomprijs | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Laden_laagste_stroomprijs.yaml) |
 | Marstek - Ontladen bij hoogste stroomprijs | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen_Hoogste_stroomprijs.yaml) |
 | Marstek - Veiligheid | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Veiligheid.yaml) |
-| Airco Temperatuur en luchtvochtigheid | [![Importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FAirco-Temperatuur_en_luchtvochtigheid.yaml) |
 
 Na een update op GitHub kun je in Home Assistant bij de blueprint op **Opnieuw importeren** klikken om de nieuwste versie op te halen.
 
@@ -216,35 +211,6 @@ Na een herstart gaat het laden niet vanzelf verder. De stroomprijs-blueprints st
 | Ontlaad-automation | `automation.marstek_ontladen` |
 | Maximale duur | Standaard 2 uur. Kies iets langer dan je langste laad- of ontlaadduur |
 | Melding (optioneel) | Bijvoorbeeld `notify.mobile_app_telefoon`, of leeg laten |
-
-## Airco Temperatuur en luchtvochtigheid
-
-Regelt een airco tussen een start- en eindtijd. Elke 15 minuten wordt gecontroleerd:
-
-| Situatie | Actie |
-|---|---|
-| Temperatuur boven het maximum | Koelen naar 20 °C |
-| Temperatuur onder het minimum | Verwarmen naar 18 °C |
-| Temperatuur in orde, luchtvochtigheid boven het maximum | Drogen |
-| Temperatuur in orde, luchtvochtigheid onder het minimum | Alleen ventileren |
-| Temperatuur in orde, luchtvochtigheid tussen 48 en 52% | Airco uit |
-| Eindtijd bereikt | Airco uit |
-
-| Veld | Standaard |
-|---|---|
-| Airco | – |
-| Temperatuursensor | – |
-| Luchtvochtigheidssensor | – |
-| Maximale temperatuur | 24 °C |
-| Minimale temperatuur | 16 °C |
-| Maximale luchtvochtigheid | 60% |
-| Minimale luchtvochtigheid | 40% |
-| Starttijd | 17:00 |
-| Eindtijd | 18:30 |
-
-Maak per kamer een eigen automation aan met deze blueprint.
-
----
 
 ## Energie-dashboard
 

@@ -1,10 +1,10 @@
 🇳🇱 [Nederlands](README.md) | 🇬🇧 **English**
 
-# Home Assistant – Marstek home battery, Zonneplan & air conditioning
+# Home Assistant – Marstek home battery & Zonneplan
 
-Blueprints and a dashboard for Home Assistant to smartly charge and discharge a **Marstek Venus home battery** based on the **Zonneplan** electricity price, plus a blueprint to control an **air conditioner** based on temperature and humidity.
+Blueprints and a dashboard for Home Assistant to smartly charge and discharge a **Marstek Venus home battery** based on the **Zonneplan** electricity price.
 
-> 📖 Background on my blog (in Dutch): [Smart home battery charging with Home Assistant and Zonneplan](https://fonferek.cloud/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). More Home Assistant posts at [fonferek.cloud](https://fonferek.cloud/onderwerpen/homeassistant/).
+> 📖 Background on my blog (in Dutch): [Smart home battery charging with Home Assistant and Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). More Home Assistant posts at [fonferek.tech](https://fonferek.tech/).
 
 ![Energy dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 
@@ -21,7 +21,6 @@ Blueprints and a dashboard for Home Assistant to smartly charge and discharge a 
 | [`Marstek_Laden_laagste_stroomprijs.yaml`](Marstek_Laden_laagste_stroomprijs.yaml) | Blueprint | Starts charging at the cheapest hour of the day |
 | [`Marstek_Ontladen_Hoogste_stroomprijs.yaml`](Marstek_Ontladen_Hoogste_stroomprijs.yaml) | Blueprint | Starts discharging at the most expensive hour of the day |
 | [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) | Blueprint | Returns the batteries to standby if they get stuck charging or discharging |
-| [`Airco-Temperatuur_en_luchtvochtigheid.yaml`](Airco-Temperatuur_en_luchtvochtigheid.yaml) | Blueprint | Controls an air conditioner based on temperature and humidity within a time window |
 | [`EnergyDashboard.yaml`](EnergyDashboard.yaml) | Dashboard | Overview of electricity price, batteries, solar panels and consumption |
 | [`EnergyHelpers.yaml`](EnergyHelpers.yaml) | Template sensors | Helpers required by the dashboard and blueprints |
 
@@ -79,10 +78,7 @@ There is also **Marstek - Veiligheid** (safety): a safety net that restores the 
 | Charge at lowest price | ✅ | ✅ | | optional | | ✅ |
 | Discharge at highest price | ✅ | ✅ | | | | ✅ |
 | Marstek - Veiligheid (safety) | | ✅ | | | | |
-| Air conditioning temperature and humidity | | | | | | |
 | Energy dashboard | ✅ | ✅ | ✅ | ✅ | optional | ✅ |
-
-The air conditioning blueprint only needs an air conditioner (`climate` entity) and a temperature and humidity sensor.
 
 ---
 
@@ -97,7 +93,6 @@ Click a button below, or in Home Assistant go to **Settings → Automations & sc
 | Marstek - Laden bij laagste stroomprijs (charge at lowest price) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Laden_laagste_stroomprijs.yaml) |
 | Marstek - Ontladen bij hoogste stroomprijs (discharge at highest price) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Ontladen_Hoogste_stroomprijs.yaml) |
 | Marstek - Veiligheid (safety) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FMarstek_Veiligheid.yaml) |
-| Airco Temperatuur en luchtvochtigheid (air conditioning) | [![Import](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2FAirco-Temperatuur_en_luchtvochtigheid.yaml) |
 
 After an update on GitHub, click **Re-import blueprint** on the blueprint in Home Assistant to get the latest version.
 
@@ -218,35 +213,6 @@ After a restart, charging does not resume automatically. The price-based bluepri
 | Ontlaad-automation | Discharge automation | `automation.marstek_ontladen` |
 | Maximale duur | Maximum duration | Default 2 hours. Choose slightly longer than your longest charge or discharge duration |
 | Melding (optioneel) | Notification (optional) | E.g. `notify.mobile_app_phone`, or leave empty |
-
-## Airco Temperatuur en luchtvochtigheid (air conditioning)
-
-Controls an air conditioner between a start and end time. Every 15 minutes it checks:
-
-| Situation | Action |
-|---|---|
-| Temperature above the maximum | Cool to 20 °C |
-| Temperature below the minimum | Heat to 18 °C |
-| Temperature OK, humidity above the maximum | Dry |
-| Temperature OK, humidity below the minimum | Fan only |
-| Temperature OK, humidity between 48 and 52% | Air conditioner off |
-| End time reached | Air conditioner off |
-
-| Field (Dutch) | Meaning | Default |
-|---|---|---|
-| Airco | Air conditioner | – |
-| Temperatuursensor | Temperature sensor | – |
-| Luchtvochtigheidssensor | Humidity sensor | – |
-| Maximale temperatuur | Maximum temperature | 24 °C |
-| Minimale temperatuur | Minimum temperature | 16 °C |
-| Maximale luchtvochtigheid | Maximum humidity | 60% |
-| Minimale luchtvochtigheid | Minimum humidity | 40% |
-| Starttijd | Start time | 17:00 |
-| Eindtijd | End time | 18:30 |
-
-Create a separate automation from this blueprint for each room.
-
----
 
 ## Energy dashboard
 
