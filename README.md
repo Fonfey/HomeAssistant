@@ -1,10 +1,24 @@
 🇳🇱 **Nederlands** | 🇬🇧 [English](README.en.md)
 
-# Home Assistant – Marstek thuisbatterij & Zonneplan
+# Home Assistant: blueprints, automations en dashboards
+
+Alles uit mijn Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/), klaar om over te nemen. Per onderwerp een map met de bestanden en een korte uitleg; de volledige uitleg staat in de blog.
+
+| Onderwerp | Map | Blog |
+|---|---|---|
+| Thuisbatterij slim laden (Marstek & Zonneplan) | [hieronder](#thuisbatterij-marstek--zonneplan), bestanden in de hoofdmap | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
+| Energie-overzicht: kosten en besparing | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
+| Meldingen: afval, waterlek en batterijen | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |
+| Wandtablet met Fully Kiosk en WallPanel | [`wandtablet/`](wandtablet/) | [Wandtablet-dashboard met Fully Kiosk en WallPanel](https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/) |
+| Philips Hue Tap Dial | [`hue-tap-dial/`](hue-tap-dial/) | [Hue Tap Dial: één knop voor alles](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/) |
+
+---
+
+# Thuisbatterij: Marstek & Zonneplan
 
 Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs.
 
-> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/). Meer Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/).
+> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/).
 
 ![Energie-dashboard](https://github.com/Fonfey/HomeAssistant/blob/main/EnergyDashboard.png)
 

@@ -1,0 +1,33 @@
+# Philips Hue Tap Dial: voorbeeld uit https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/
+# Vervang event.tap_dial_*, light.lamp_a, light.lamp_b en light.groep_c door je eigen entiteiten.
+# Nodig: input_select.tap_dial_groep (opties: Lamp A, Lamp B, Groep C) en input_text.lamp_a_scene / input_text.lamp_b_scene.
+alias: Tap Dial - knop 1
+triggers:
+  - trigger: state
+    entity_id: event.tap_dial_button_1
+    attribute: event_type
+    to: short_release
+    id: kort
+  - trigger: state
+    entity_id: event.tap_dial_button_1
+    attribute: event_type
+    to: long_release
+    id: lang
+actions:
+  - choose:
+      - conditions: [{ condition: trigger, id: kort }]
+        sequence:
+          - action: light.turn_on
+            target: { entity_id: light.lamp_a }
+            data: { brightness_pct: 50 }
+          - action: input_select.select_option
+            target: { entity_id: input_select.tap_dial_groep }
+            data: { option: Lamp A }
+      - conditions: [{ condition: trigger, id: lang }]
+        sequence:
+          - action: light.turn_off
+            target: { entity_id: light.lamp_a }
+          - action: input_select.select_option
+            target: { entity_id: input_select.tap_dial_groep }
+            data: { option: Groep C }
+mode: single
