@@ -1,0 +1,24 @@
+# Nieuwe automatisering → ⋮ → Bewerken in YAML → plak dit. Vervang notify.mobile_app_JOUW_TELEFOON.
+# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-4-het-avondbericht
+alias: "Notificatie: Energie-avondbericht"
+description: Dagelijkse samenvatting van stroom, gas, zon, batterij en besparing.
+mode: single
+triggers:
+  - trigger: time
+    at: "23:55:00"
+actions:
+  - action: notify.mobile_app_JOUW_TELEFOON
+    data:
+      title: "⚡ Energie vandaag"
+      message: >-
+        {%- macro eur(e) -%}{%- set v = states(e) | float(0) -%}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}{%- endmacro -%}
+        {%- macro kwh(e) -%}{{ (state_attr(e, 'kwh') | float(0)) | round(1) | string | replace('.', ',') }}{%- endmacro -%}
+        {%- set pv = state_attr('sensor.energie_zon_dag', 'kwh') | float(0) -%}
+        {%- set verwachting = 'sensor.energy_production_tomorrow' -%}
+        🔌 Net: {{ eur('sensor.energie_afname_dag') }} afgenomen ({{ kwh('sensor.energie_afname_dag') }} kWh), {{ eur('sensor.energie_teruglevering_dag') }} terug → netto {{ eur('sensor.energie_netto_betaald_dag') }}
+        🔥 Gas: {{ eur('sensor.energie_gas_dag') }} ({{ (state_attr('sensor.energie_gas_dag', 'm3') | float(0)) | round(1) | string | replace('.', ',') }} m³) → stroom + gas {{ eur('sensor.energie_stroom_en_gas_dag') }}
+        ☀️ Zon: {{ kwh('sensor.energie_zon_dag') }} kWh, waarde {{ eur('sensor.energie_zon_dag') }}
+        🔋 Batterijwinst: {{ eur('sensor.energie_slim_laden_dag') }} ({{ kwh('sensor.energie_ontladen_dag') }} kWh geleverd, {{ kwh('sensor.energie_laden_dag') }} kWh geladen)
+        💰 Totaal bespaard: {{ eur('sensor.energie_besparing_dag') }} vandaag, {{ eur('sensor.energie_besparing_maand') }} deze maand
+        {%- if has_value(verwachting) %}{% set morgen = states(verwachting) | float(0) %}
+        🌤️ Morgen: ~{{ morgen | round(1) | string | replace('.', ',') }} kWh zon verwacht{% if morgen > pv * 1.2 %} (zonniger){% elif morgen < pv * 0.8 %} (minder zon){% endif %}{% endif %}

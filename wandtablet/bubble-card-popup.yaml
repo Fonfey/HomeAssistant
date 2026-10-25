@@ -1,0 +1,16 @@
+# Voorbeeld van een Bubble Card-pop-up die na 30 seconden vanzelf sluit. Open hem met een knop die navigeert naar #Lampen.
+# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#pop-ups-in-plaats-van-extra-paginas
+type: custom:bubble-card
+card_type: pop-up
+hash: '#Lampen'
+auto_close: '30000'
+cards:
+  - type: grid
+    columns: 4
+    square: true
+    cards:
+      - type: button
+        entity: light.keuken
+        name: Keuken
+        tap_action:
+          action: toggle

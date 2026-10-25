@@ -1,0 +1,23 @@
+# Uitleg: https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/
+# Gebruikt de meldingsgroep notify.ik (zie de blog). Vervang de entiteiten door die van jezelf.
+alias: Melding - afval morgen
+triggers:
+  - trigger: calendar
+    entity_id: calendar.twente_milieu
+    event: start
+    offset: '-06:00:00'
+actions:
+  - variables:
+      namen:
+        organic waste pickup: groene container
+        paper waste pickup: papiercontainer
+        packages waste pickup: plastic container
+        non-recyclable waste pickup: grijze container
+      soort: "{{ trigger.calendar_event.summary | lower }}"
+  - action: notify.send_message
+    target:
+      entity_id: notify.ik
+    data:
+      title: Afval
+      message: "Morgen wordt de {{ namen.get(soort, soort) }} opgehaald 🗑️"
+mode: queued

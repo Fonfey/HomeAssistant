@@ -1,0 +1,40 @@
+# Wandtablet: zet dit op het hoogste niveau van je dashboardconfiguratie
+# (Bewerken → Raw configuration editor), boven `views:`. Vereist Kiosk Mode, WallPanel en Digital Clock (HACS).
+# Maak eerst de helper input_boolean.wallpanel_screensaver aan.
+# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/
+kiosk_mode:
+  hide_search: true
+  hide_assistant: true
+
+wallpanel:
+  enabled: true
+  hide_toolbar: true
+  hide_sidebar: true
+  screensaver_entity: input_boolean.wallpanel_screensaver
+  image_url: media-source://media_source/local
+  media_order: random
+  display_time: 60
+  crossfade_time: 5
+  image_fit_landscape: cover
+  cards:
+    - type: custom:digital-clock
+    - type: entities
+      entities:
+        - entity: sensor.knmi_temperatuur
+          name: Temperatuur
+        - entity: sensor.knmi_max_temperatuur_morgen
+          name: Morgen
+    - type: markdown
+      content: >-
+        {% set namen = {
+          'organic waste pickup': 'groene container',
+          'paper waste pickup': 'papiercontainer',
+          'packages waste pickup': 'plastic container',
+          'non-recyclable waste pickup': 'grijze container'
+        } %}
+        {% set ev = states.calendar.twente_milieu %}
+        {% if ev and ev.attributes.start_time
+              and (as_datetime(ev.attributes.start_time).date() - now().date()).days == 1 %}
+          {% set soort = ev.attributes.message | lower %}
+          Morgen wordt de {{ namen.get(soort, soort) }} opgehaald 🗑️
+        {% endif %}

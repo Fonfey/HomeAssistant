@@ -1,0 +1,239 @@
+# Energie-overzicht: plak dit onder `views:` in de Raw-configuratie-editor van je dashboard.
+# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-3-het-dashboard
+  - title: Energie-overzicht
+    path: energie-overzicht
+    icon: mdi:cash-multiple
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Vandaag
+            icon: mdi:calendar
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_afname_dag
+            primary: "Van het net"
+            secondary: "{% set v = states('sensor.energie_afname_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_afname_dag','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: "orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_teruglevering_dag
+            primary: "Teruggeleverd"
+            secondary: "{% set v = states('sensor.energie_teruglevering_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_teruglevering_dag','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: "teal"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_netto_betaald_dag
+            primary: "Netto stroomkosten {% set v = states('sensor.energie_netto_betaald_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Van het net min teruggeleverd"
+            icon: mdi:cash
+            icon_color: "{% if states('sensor.energie_netto_betaald_dag') | float(0) <= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_gas_dag
+            primary: "Gas"
+            secondary: "{% set v = states('sensor.energie_gas_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_gas_dag','m3') | float(0)) | round(1) | string | replace('.', ',') }} m³"
+            icon: mdi:fire
+            icon_color: "deep-orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_stroom_en_gas_dag
+            primary: "Stroom + gas"
+            secondary: "{% set v = states('sensor.energie_stroom_en_gas_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} totaal"
+            icon: mdi:home-lightning-bolt
+            icon_color: "blue"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_zon_dag
+            primary: "Zonnestroom {% set v = states('sensor.energie_zon_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_zon_dag','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh opgewekt"
+            icon: mdi:solar-power
+            icon_color: "amber"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_slim_laden_dag
+            primary: "Batterijwinst {% set v = states('sensor.energie_slim_laden_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_ontladen_dag','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh ontladen · {{ (state_attr('sensor.energie_laden_dag','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh geladen"
+            icon: mdi:battery-sync
+            icon_color: "{% if states('sensor.energie_slim_laden_dag') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_besparing_dag
+            primary: "Totaal bespaard {% set v = states('sensor.energie_besparing_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Zonder zon en batterij had je {% set v = states('sensor.energie_zonder_zon_batterij_dag') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} betaald"
+            icon: mdi:piggy-bank
+            icon_color: "{% if states('sensor.energie_besparing_dag') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Deze maand
+            icon: mdi:calendar
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_afname_maand
+            primary: "Van het net"
+            secondary: "{% set v = states('sensor.energie_afname_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_afname_maand','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: "orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_teruglevering_maand
+            primary: "Teruggeleverd"
+            secondary: "{% set v = states('sensor.energie_teruglevering_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_teruglevering_maand','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: "teal"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_netto_betaald_maand
+            primary: "Netto stroomkosten {% set v = states('sensor.energie_netto_betaald_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Van het net min teruggeleverd"
+            icon: mdi:cash
+            icon_color: "{% if states('sensor.energie_netto_betaald_maand') | float(0) <= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_gas_maand
+            primary: "Gas"
+            secondary: "{% set v = states('sensor.energie_gas_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_gas_maand','m3') | float(0)) | round(1) | string | replace('.', ',') }} m³"
+            icon: mdi:fire
+            icon_color: "deep-orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_stroom_en_gas_maand
+            primary: "Stroom + gas"
+            secondary: "{% set v = states('sensor.energie_stroom_en_gas_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} totaal"
+            icon: mdi:home-lightning-bolt
+            icon_color: "blue"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_zon_maand
+            primary: "Zonnestroom {% set v = states('sensor.energie_zon_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_zon_maand','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh opgewekt"
+            icon: mdi:solar-power
+            icon_color: "amber"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_slim_laden_maand
+            primary: "Batterijwinst {% set v = states('sensor.energie_slim_laden_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_ontladen_maand','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh ontladen · {{ (state_attr('sensor.energie_laden_maand','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh geladen"
+            icon: mdi:battery-sync
+            icon_color: "{% if states('sensor.energie_slim_laden_maand') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_besparing_maand
+            primary: "Totaal bespaard {% set v = states('sensor.energie_besparing_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Zonder zon en batterij had je {% set v = states('sensor.energie_zonder_zon_batterij_maand') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} betaald"
+            icon: mdi:piggy-bank
+            icon_color: "{% if states('sensor.energie_besparing_maand') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Dit jaar
+            icon: mdi:calendar
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_afname_jaar
+            primary: "Van het net"
+            secondary: "{% set v = states('sensor.energie_afname_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_afname_jaar','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: "orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_teruglevering_jaar
+            primary: "Teruggeleverd"
+            secondary: "{% set v = states('sensor.energie_teruglevering_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_teruglevering_jaar','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: "teal"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_netto_betaald_jaar
+            primary: "Netto stroomkosten {% set v = states('sensor.energie_netto_betaald_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Van het net min teruggeleverd"
+            icon: mdi:cash
+            icon_color: "{% if states('sensor.energie_netto_betaald_jaar') | float(0) <= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_gas_jaar
+            primary: "Gas"
+            secondary: "{% set v = states('sensor.energie_gas_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} · {{ (state_attr('sensor.energie_gas_jaar','m3') | float(0)) | round(1) | string | replace('.', ',') }} m³"
+            icon: mdi:fire
+            icon_color: "deep-orange"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_stroom_en_gas_jaar
+            primary: "Stroom + gas"
+            secondary: "{% set v = states('sensor.energie_stroom_en_gas_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} totaal"
+            icon: mdi:home-lightning-bolt
+            icon_color: "blue"
+            grid_options: {columns: 6, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_zon_jaar
+            primary: "Zonnestroom {% set v = states('sensor.energie_zon_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_zon_jaar','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh opgewekt"
+            icon: mdi:solar-power
+            icon_color: "amber"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_slim_laden_jaar
+            primary: "Batterijwinst {% set v = states('sensor.energie_slim_laden_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "{{ (state_attr('sensor.energie_ontladen_jaar','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh ontladen · {{ (state_attr('sensor.energie_laden_jaar','kwh') | float(0)) | round(1) | string | replace('.', ',') }} kWh geladen"
+            icon: mdi:battery-sync
+            icon_color: "{% if states('sensor.energie_slim_laden_jaar') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+          - type: custom:mushroom-template-card
+            entity: sensor.energie_besparing_jaar
+            primary: "Totaal bespaard {% set v = states('sensor.energie_besparing_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }}"
+            secondary: "Zonder zon en batterij had je {% set v = states('sensor.energie_zonder_zon_batterij_jaar') | float(0) %}{{ '-' if v < 0 else '' }}€{{ '%.2f' | format(v | abs) | replace('.', ',') }} betaald"
+            icon: mdi:piggy-bank
+            icon_color: "{% if states('sensor.energie_besparing_jaar') | float(0) >= 0 %}green{% else %}red{% endif %}"
+            grid_options: {columns: 12, rows: 1}
+            tap_action: {action: more-info}
+      - type: grid
+        cards:
+          - type: heading
+            heading: Uitleg
+            icon: mdi:information-outline
+          - type: markdown
+            content: |
+              **Van het net** · Stroom die je hebt ingekocht, elke kWh tegen de prijs van dat moment.
+
+              **Teruggeleverd** · Stroom die je aan het net hebt geleverd, en wat dat opleverde.
+
+              **Netto stroomkosten** · Wat je per saldo voor stroom betaalt: van het net min teruggeleverd. Groen betekent dat je meer terugkreeg dan je betaalde.
+
+              **Gas** · Gas dat je hebt verbruikt, elke m³ tegen de gasprijs van die dag.
+
+              **Stroom + gas** · Je totale energiekosten: netto stroomkosten plus gas.
+
+              **Zonnestroom** · Alles wat je panelen opwekten, tegen de netprijs van dat moment. Dit had je anders moeten inkopen.
+
+              **Batterijwinst** · Wat de batterij opleverde bij ontladen, min wat het laden kostte. Rood betekent dat laden meer kostte dan ontladen opleverde. Na een nacht laden staat dit tijdelijk in de min, tot de batterij in de dure uren weer ontlaadt.
+
+              **Totaal bespaard** · Zonnestroom plus batterijwinst. Daaronder staat wat je zonder zon en batterij had betaald.
+
+              *Alleen variabele kosten voor stroom en gas, zonder vastrecht en netbeheer. Tik op een kaart voor het verloop.*

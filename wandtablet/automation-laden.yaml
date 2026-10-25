@@ -1,0 +1,29 @@
+# Vervang switch.lader_tablet door je eigen slimme stekker of Shelly.
+# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#slim-laden-met-een-slimme-stekker
+alias: Wandtablet - laden tussen 15% en 90%
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.wandtablet_batterij
+    below: 15
+    id: laden
+  - trigger: numeric_state
+    entity_id: sensor.wandtablet_batterij
+    above: 90
+    id: stoppen
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: laden
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.lader_tablet
+      - conditions:
+          - condition: trigger
+            id: stoppen
+        sequence:
+          - action: switch.turn_off
+            target:
+              entity_id: switch.lader_tablet
+mode: single

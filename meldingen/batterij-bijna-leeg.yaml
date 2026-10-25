@@ -1,0 +1,20 @@
+# Uitleg: https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/
+# Gebruikt de meldingsgroep notify.ik (zie de blog). Vervang de entiteiten door die van jezelf.
+alias: Melding - batterij bijna leeg
+triggers:
+  - trigger: numeric_state
+    entity_id:
+      - sensor.sensor_overloop_batterij
+      - sensor.sensor_berging_batterij
+      - sensor.wasmachine_water_sensor_batterij
+    below: 15
+actions:
+  - action: notify.send_message
+    target:
+      entity_id: notify.ik
+    data:
+      title: 🔋 Batterij bijna leeg
+      message: >-
+        {{ trigger.to_state.name }} staat op {{ trigger.to_state.state | int }}%.
+        Er moet een {{ trigger.to_state.attributes.battery_size | default('batterij van onbekend type') }} in.
+mode: queued

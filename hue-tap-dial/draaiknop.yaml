@@ -1,0 +1,41 @@
+# Philips Hue Tap Dial: voorbeeld uit https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/
+# Vervang event.tap_dial_*, light.lamp_a, light.lamp_b en light.groep_c door je eigen entiteiten.
+# Nodig: input_select.tap_dial_groep (opties: Lamp A, Lamp B, Groep C) en input_text.lamp_a_scene / input_text.lamp_b_scene.
+alias: Tap Dial - draaiknop
+triggers:
+  - trigger: state
+    entity_id: event.tap_dial_draaiknop
+variables:
+  richting: "{{ trigger.to_state.attributes.event_type }}"
+  pct: >
+    {% set stappen = trigger.to_state.attributes.get('steps', 15) | int(15) %}
+    {{ [[(stappen / 15) | round(0, 'floor'), 1] | max, 15] | min }}
+  stap: "{{ pct if richting == 'clock_wise' else -pct }}"
+actions:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_select.tap_dial_groep
+            state: Lamp A
+        sequence:
+          - action: light.turn_on
+            target: { entity_id: light.lamp_a }
+            data: { brightness_step_pct: "{{ stap }}" }
+      - conditions:
+          - condition: state
+            entity_id: input_select.tap_dial_groep
+            state: Lamp B
+        sequence:
+          - action: light.turn_on
+            target: { entity_id: light.lamp_b }
+            data: { brightness_step_pct: "{{ stap }}" }
+      - conditions:
+          - condition: state
+            entity_id: input_select.tap_dial_groep
+            state: Groep C
+        sequence:
+          - action: light.turn_on
+            target: { entity_id: light.groep_c }
+            data: { brightness_step_pct: "{{ stap }}" }
+# Snel draaien: alleen de laatste beweging telt.
+mode: restart
