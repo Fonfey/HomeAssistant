@@ -2,7 +2,7 @@
 
 De draaiknop dimt steeds wat je het laatst met een knop hebt aangezet. Knop 3 en 4 bladeren door de scènes uit de Hue-app, zonder dat je in Home Assistant een lijst hoeft bij te houden.
 
-📖 **Uitleg:** [Hue Tap Dial in Home Assistant: één knop voor alles](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/)
+📖 **Uitleg:** [Hue Tap Dial in Home Assistant: één draaiknop voor meerdere lampen](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/)
 
 | Bestand | Kort indrukken | Lang indrukken |
 |---|---|---|

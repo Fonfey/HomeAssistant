@@ -7,10 +7,10 @@ Everything from my Home Assistant blog posts on [fonferek.tech](https://fonferek
 | Topic | Folder | Blog post (Dutch) |
 |---|---|---|
 | Smart home battery charging (Marstek & Zonneplan) | [below](#home-battery-marstek--zonneplan), files in the root folder | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
-| Energy overview: real costs and savings with dynamic prices | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
-| Notifications: waste collection, water leak and low batteries | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |
-| Wall tablet with Fully Kiosk and WallPanel | [`wandtablet/`](wandtablet/) | [Wandtablet-dashboard met Fully Kiosk en WallPanel](https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/) |
-| Philips Hue Tap Dial | [`hue-tap-dial/`](hue-tap-dial/) | [Hue Tap Dial: één knop voor alles](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/) |
+| Energy overview: real costs and savings with dynamic prices | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant: wat kosten stroom en gas echt?](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
+| Notifications: waste collection, water leak and low batteries | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |
+| Wall tablet with Fully Kiosk and WallPanel | [`wandtablet/`](wandtablet/) | [Een wandtablet als Home Assistant-dashboard: Fully Kiosk, WallPanel en slim laden](https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/) |
+| Philips Hue Tap Dial | [`hue-tap-dial/`](hue-tap-dial/) | [Hue Tap Dial in Home Assistant: één draaiknop voor meerdere lampen](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/) |
 
 ---
 

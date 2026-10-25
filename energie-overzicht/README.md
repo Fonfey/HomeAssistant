@@ -2,7 +2,7 @@
 
 Per dag, maand en jaar zien wat je van het net haalt, wat je teruglevert, wat gas kost, wat zon en slim laden opleveren en wat je bespaart. Elke kWh en m³ tegen de prijs van dat moment.
 
-📖 **Volledige uitleg, stap voor stap:** [Een eerlijk energie-overzicht in Home Assistant](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/)
+📖 **Volledige uitleg, stap voor stap:** [Een eerlijk energie-overzicht in Home Assistant: wat kosten stroom en gas echt?](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/)
 
 | Bestand | Waar het heen moet | Wat je zelf invult |
 |---|---|---|
