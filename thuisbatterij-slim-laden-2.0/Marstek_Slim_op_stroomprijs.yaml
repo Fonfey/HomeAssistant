@@ -21,55 +21,18 @@ blueprint:
     batterijen:
       name: Batterijen
       icon: mdi:home-battery
-      description: Kies bij elk veld één entiteit per batterij, uit de Marstek Venus Modbus-integratie.
       input:
-        force_mode_selects:
-          name: Force mode
-          description: Laat de batterij geforceerd laden of in standby staan (*Force Mode*).
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - integration: marstek_modbus
-                  domain: select
-        work_mode_selects:
-          name: Werkmodus
-          description: De normale werkstand (*User Work Mode*). Wordt op *anti_feed* gezet.
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - integration: marstek_modbus
-                  domain: select
-        rs485_switches:
-          name: RS485-besturing
-          description: De schakelaar *RS485 Control Mode*. Aan tijdens geforceerd laden, daarna weer uit.
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - integration: marstek_modbus
-                  domain: switch
-        charge_power_numbers:
-          name: Laadvermogen
-          description: De instelling *Set Charge Power*, voor het laden in het goedkoopste blok.
-          selector:
-            entity:
-              multiple: true
-              filter:
-                - integration: marstek_modbus
-                  domain: number
-        max_discharge_numbers:
-          name: Maximaal ontlaadvermogen
+        battery_devices:
+          name: Batterijen
           description: >-
-            De instelling *Max Discharge Power* (niet *Set* Discharge Power). Op 0 spaart de batterij,
-            op het maximum levert hij wat het huis verbruikt.
+            Kies je Marstek-batterijen. De blueprint zoekt per batterij zelf de juiste instellingen erbij:
+            *Force Mode*, *User Work Mode*, *RS485 Control Mode*, *Set Charge Power* en *Max Discharge Power*.
+            Heb je de entiteit-ID's van de Marstek-integratie hernoemd, dan vindt hij ze niet; gebruik dan de losse YAML.
           selector:
-            entity:
+            device:
               multiple: true
               filter:
                 - integration: marstek_modbus
-                  domain: number
     prijs:
       name: Stroomprijs
       icon: mdi:cash-clock
@@ -147,7 +110,14 @@ mode: queued
 max: 5
 
 variables:
-  ontlaad_entiteiten: !input max_discharge_numbers
+  batterijen: !input battery_devices
+  # Alle entiteiten van de gekozen batterijen; daaruit de vijf die deze automation gebruikt.
+  alle_entiteiten: "{{ batterijen | map('device_entities') | sum(start=[]) }}"
+  force_modes: "{{ alle_entiteiten | select('match', 'select\\..*force_mode(_\\d+)?$') | list }}"
+  werkmodi: "{{ alle_entiteiten | select('match', 'select\\..*user_work_mode(_\\d+)?$') | list }}"
+  rs485: "{{ alle_entiteiten | select('match', 'switch\\..*rs485_control_mode(_\\d+)?$') | list }}"
+  laadvermogens: "{{ alle_entiteiten | select('match', 'number\\..*set_charge_power(_\\d+)?$') | list }}"
+  ontlaad_entiteiten: "{{ alle_entiteiten | select('match', 'number\\..*max_discharge_power(_\\d+)?$') | list }}"
   ontlaad_max: !input discharge_power_value
   handmatig: !input manual_automations
 
@@ -175,6 +145,16 @@ conditions:
 
 actions:
   - if:
+      - condition: template
+        value_template: >-
+          {{ [force_modes, werkmodi, rs485, laadvermogens, ontlaad_entiteiten]
+             | map('count') | select('ne', batterijen | count) | list | count > 0 }}
+    then:
+      - stop: >-
+          Niet bij elke batterij zijn Force Mode, User Work Mode, RS485 Control Mode, Set Charge Power
+          en Max Discharge Power gevonden. Controleer of die entiteiten zijn ingeschakeld.
+        error: true
+  - if:
       - condition: trigger
         id: herstart
     then:
@@ -190,74 +170,61 @@ actions:
         sequence:
           - if:
               # Alleen iets doen als de batterijen nog niet geforceerd laden
-              - condition: not
-                conditions:
-                  - condition: and
-                    conditions:
-                      - condition: state
-                        entity_id: !input force_mode_selects
-                        state: charge
-                      - condition: state
-                        entity_id: !input rs485_switches
-                        state: "on"
+              - condition: template
+                value_template: >-
+                  {{ force_modes | map('states') | select('ne', 'charge') | list | count > 0
+                     or rs485 | map('states') | select('ne', 'on') | list | count > 0 }}
             then:
               - action: select.select_option
                 target:
-                  entity_id: !input force_mode_selects
+                  entity_id: "{{ force_modes }}"
                 data:
                   option: standby
               - action: select.select_option
                 target:
-                  entity_id: !input work_mode_selects
+                  entity_id: "{{ werkmodi }}"
                 data:
                   option: anti_feed
               - action: switch.turn_off
                 target:
-                  entity_id: !input rs485_switches
+                  entity_id: "{{ rs485 }}"
               - delay:
                   seconds: 10
               - action: number.set_value
                 target:
-                  entity_id: !input charge_power_numbers
+                  entity_id: "{{ laadvermogens }}"
                 data:
                   value: !input charge_power_value
               - action: select.select_option
                 target:
-                  entity_id: !input force_mode_selects
+                  entity_id: "{{ force_modes }}"
                 data:
                   option: charge
               - action: switch.turn_on
                 target:
-                  entity_id: !input rs485_switches
+                  entity_id: "{{ rs485 }}"
     default:
       # Niet in het goedkoopste blok: eerst terug naar de normale stand (anti_feed)
       - alias: "Terug naar de normale stand"
         if:
-          - condition: or
-            conditions:
-              - condition: state
-                entity_id: !input rs485_switches
-                match: any
-                state: "on"
-              - condition: not
-                conditions:
-                  - condition: state
-                    entity_id: !input work_mode_selects
-                    state: anti_feed
+          - condition: template
+            value_template: >-
+              {{ rs485 | map('states') | select('eq', 'on') | list | count > 0
+                 or werkmodi | map('states') | select('ne', 'anti_feed') | list | count > 0 }}
         then:
           - action: select.select_option
             target:
-              entity_id: !input force_mode_selects
+              entity_id: "{{ force_modes }}"
             data:
               option: standby
           - action: select.select_option
             target:
-              entity_id: !input work_mode_selects
+              entity_id: "{{ werkmodi }}"
             data:
               option: anti_feed
           - action: switch.turn_off
             target:
-              entity_id: !input rs485_switches
+              entity_id: "{{ rs485 }}"
       - choose:
           # Stand 2: goedkoop, de batterij spaart
           - alias: "Onder de drempel: batterij spaart"
@@ -275,7 +242,7 @@ actions:
                 then:
                   - action: number.set_value
                     target:
-                      entity_id: !input max_discharge_numbers
+                      entity_id: "{{ ontlaad_entiteiten }}"
                     data:
                       value: 0
         # Stand 3: op of boven de drempel, de batterij levert aan het huis
@@ -290,6 +257,6 @@ actions:
             then:
               - action: number.set_value
                 target:
-                  entity_id: !input max_discharge_numbers
+                  entity_id: "{{ ontlaad_entiteiten }}"
                 data:
                   value: !input discharge_power_value
