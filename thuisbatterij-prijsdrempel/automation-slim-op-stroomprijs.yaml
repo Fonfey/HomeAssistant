@@ -1,0 +1,183 @@
+# Nieuwe automatisering → ⋮ → Bewerken in YAML → plak dit en vervang elke JOUW_… door je eigen entiteit.
+# Eén batterij? Haal de regels met JOUW_MARSTEK_2_… weg.
+# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-3-de-automation
+alias: "Marstek - Slim op stroomprijs"
+description: >-
+  Goedkoopste uren van de dag: batterijen laden van het net.
+  Prijs onder de drempel: batterij ontlaadt niet (laadt nog wel op zonne-overschot).
+  Prijs boven de drempel: batterij levert stroom aan het huis (anti_feed).
+mode: queued
+max: 5
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.goedkoopste_2_uur_stroom
+    id: blok
+  - trigger: state
+    entity_id: sensor.zonneplan_current_electricity_tariff
+    id: prijs
+  - trigger: state
+    entity_id: input_number.batterij_prijsdrempel
+    id: drempel
+  - trigger: time_pattern
+    minutes: /15
+    id: controle
+  - trigger: homeassistant
+    event: start
+    id: herstart
+actions:
+  # Na een herstart eerst 2 minuten wachten, zodat de batterij-integratie verbinding heeft
+  - if:
+      - condition: trigger
+        id: herstart
+    then:
+      - delay:
+          minutes: 2
+  - choose:
+      # Stand 1: goedkoopste uren, geforceerd laden van het net
+      - alias: "Goedkoopste uren: laden van het net"
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.goedkoopste_2_uur_stroom
+            state: "on"
+        sequence:
+          - if:
+              # Alleen iets doen als de batterijen nog niet geforceerd laden
+              - condition: not
+                conditions:
+                  - condition: and
+                    conditions:
+                      - condition: state
+                        entity_id:
+                          - select.JOUW_MARSTEK_1_FORCE_MODE
+                          - select.JOUW_MARSTEK_2_FORCE_MODE
+                        state: charge
+                      - condition: state
+                        entity_id:
+                          - switch.JOUW_MARSTEK_1_RS485
+                          - switch.JOUW_MARSTEK_2_RS485
+                        state: "on"
+            then:
+              - action: select.select_option
+                target:
+                  entity_id:
+                    - select.JOUW_MARSTEK_1_FORCE_MODE
+                    - select.JOUW_MARSTEK_2_FORCE_MODE
+                data:
+                  option: standby
+              - action: select.select_option
+                target:
+                  entity_id:
+                    - select.JOUW_MARSTEK_1_WERKMODUS
+                    - select.JOUW_MARSTEK_2_WERKMODUS
+                data:
+                  option: anti_feed
+              - action: switch.turn_off
+                target:
+                  entity_id:
+                    - switch.JOUW_MARSTEK_1_RS485
+                    - switch.JOUW_MARSTEK_2_RS485
+              - delay:
+                  seconds: 10
+              - action: number.set_value
+                target:
+                  entity_id:
+                    - number.JOUW_MARSTEK_1_LAADVERMOGEN
+                    - number.JOUW_MARSTEK_2_LAADVERMOGEN
+                data:
+                  value: 2500
+              - action: select.select_option
+                target:
+                  entity_id:
+                    - select.JOUW_MARSTEK_1_FORCE_MODE
+                    - select.JOUW_MARSTEK_2_FORCE_MODE
+                data:
+                  option: charge
+              - action: switch.turn_on
+                target:
+                  entity_id:
+                    - switch.JOUW_MARSTEK_1_RS485
+                    - switch.JOUW_MARSTEK_2_RS485
+    default:
+      # Niet in het goedkoopste blok: eerst terug naar de normale stand (anti_feed)
+      - alias: "Terug naar de normale stand"
+        if:
+          - condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - switch.JOUW_MARSTEK_1_RS485
+                  - switch.JOUW_MARSTEK_2_RS485
+                match: any
+                state: "on"
+              - condition: not
+                conditions:
+                  - condition: state
+                    entity_id:
+                      - select.JOUW_MARSTEK_1_WERKMODUS
+                      - select.JOUW_MARSTEK_2_WERKMODUS
+                    state: anti_feed
+        then:
+          - action: select.select_option
+            target:
+              entity_id:
+                - select.JOUW_MARSTEK_1_FORCE_MODE
+                - select.JOUW_MARSTEK_2_FORCE_MODE
+            data:
+              option: standby
+          - action: select.select_option
+            target:
+              entity_id:
+                - select.JOUW_MARSTEK_1_WERKMODUS
+                - select.JOUW_MARSTEK_2_WERKMODUS
+            data:
+              option: anti_feed
+          - action: switch.turn_off
+            target:
+              entity_id:
+                - switch.JOUW_MARSTEK_1_RS485
+                - switch.JOUW_MARSTEK_2_RS485
+      - choose:
+          # Stand 2: goedkoop, de batterij spaart
+          - alias: "Goedkoop: net gebruiken, batterij niet ontladen"
+            conditions:
+              - condition: numeric_state
+                entity_id: sensor.zonneplan_current_electricity_tariff
+                below: input_number.batterij_prijsdrempel
+            sequence:
+              - if:
+                  - condition: or
+                    conditions:
+                      - condition: numeric_state
+                        entity_id: number.JOUW_MARSTEK_1_MAX_ONTLAADVERMOGEN
+                        above: 0
+                      - condition: numeric_state
+                        entity_id: number.JOUW_MARSTEK_2_MAX_ONTLAADVERMOGEN
+                        above: 0
+                then:
+                  - action: number.set_value
+                    target:
+                      entity_id:
+                        - number.JOUW_MARSTEK_1_MAX_ONTLAADVERMOGEN
+                        - number.JOUW_MARSTEK_2_MAX_ONTLAADVERMOGEN
+                    data:
+                      value: 0
+        # Stand 3: duur, de batterij levert aan het huis
+        default:
+          - alias: "Duur: batterij levert stroom"
+            if:
+              - condition: or
+                conditions:
+                  - condition: numeric_state
+                    entity_id: number.JOUW_MARSTEK_1_MAX_ONTLAADVERMOGEN
+                    below: 2500
+                  - condition: numeric_state
+                    entity_id: number.JOUW_MARSTEK_2_MAX_ONTLAADVERMOGEN
+                    below: 2500
+            then:
+              - action: number.set_value
+                target:
+                  entity_id:
+                    - number.JOUW_MARSTEK_1_MAX_ONTLAADVERMOGEN
+                    - number.JOUW_MARSTEK_2_MAX_ONTLAADVERMOGEN
+                data:
+                  value: 2500
