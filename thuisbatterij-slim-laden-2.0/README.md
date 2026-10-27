@@ -14,7 +14,7 @@ De opvolger van de stroomprijs-blueprints: één automation die de Marstek-batte
 
 [![Blueprint importeren](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FFonfey%2FHomeAssistant%2Fblob%2Fmain%2Fthuisbatterij-slim-laden-2.0%2FMarstek_Slim_op_stroomprijs.yaml)
 
-Importeer de blueprint en maak er een automatisering van. Je kiest je batterij-entiteiten, de stroomprijs, de prijsdrempel en de sensor voor het goedkoopste blok uit keuzelijsten; je hoeft niets in YAML te typen. Het laad- en ontlaadvermogen, de wachttijd na een herstart en eventuele automations voor handmatig laden stel je in onder **Instellingen**.
+Importeer de blueprint en maak er een automatisering van. Je kiest alleen je **batterijen**; de blueprint zoekt per batterij zelf *Force Mode*, *User Work Mode*, *RS485 Control Mode*, *Set Charge Power* en *Max Discharge Power* erbij. Daarna kies je de stroomprijs, de prijsdrempel en de sensor voor het goedkoopste blok. Je hoeft niets in YAML te typen. (Heb je de entiteit-ID's van de Marstek-integratie hernoemd? Gebruik dan de losse YAML.) Het laad- en ontlaadvermogen, de wachttijd na een herstart en eventuele automations voor handmatig laden stel je in onder **Instellingen**.
 
 De twee helpers (prijsdrempel en goedkoopste blok) maak je eerst aan, zie hieronder.
 
