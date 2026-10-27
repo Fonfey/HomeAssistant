@@ -1,0 +1,56 @@
+{#- Helper → Template → Sensor "Batterij dynamische drempel" (eenheid €/kWh): plak dit in het Statussjabloon
+    en vul bovenaan je eigen waarden in. Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-3-de-dynamische-drempel -#}
+{# ===== Vul hier je eigen gegevens in ===== #}
+{# De SoC-sensor van elke batterij #}
+{% set batterijen = ['sensor.JOUW_MARSTEK_1_SOC', 'sensor.JOUW_MARSTEK_2_SOC'] %}
+{# Capaciteit per batterij in kWh #}
+{% set capaciteit = 5.12 %}
+{# Onder dit percentage ontlaadt de batterij niet verder #}
+{% set ondergrens_soc = 12 %}
+{# Verwacht verbruik per uur in kWh, van 00:00 tot 23:00 #}
+{% set profiel = [0.27,0.26,0.26,0.25,0.25,0.31,0.56,0.62,0.54,0.40,0.40,0.40,
+                  0.45,0.45,0.50,0.50,0.60,1.27,0.62,0.65,0.45,0.38,0.30,0.24] %}
+{# Veiligheidsmarge op het verbruik: 1.15 = 15% extra #}
+{% set marge = 1.15 %}
+{# ===== Hieronder hoef je niets te veranderen ===== #}
+{% set fc = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}
+{% set vloer = states('input_number.batterij_prijsdrempel') | float(0.15) %}
+{% set b = namespace(kwh=0) %}
+{% for e in batterijen %}
+  {% set b.kwh = b.kwh + ([states(e) | float(0) - ondergrens_soc, 0] | max) / 100 * capaciteit * 0.92 %}
+{% endfor %}
+{% set ns = namespace(eind=none, dagen=[]) %}
+{% for p in fc %}
+  {% set d = as_local(as_datetime(p.start_date)).date() | string %}
+  {% if d not in ns.dagen %}{% set ns.dagen = ns.dagen + [d] %}{% endif %}
+{% endfor %}
+{% for d in ns.dagen %}
+  {% set v = namespace(l=[]) %}
+  {% for p in fc %}
+    {% if as_local(as_datetime(p.start_date)).date() | string == d %}{% set v.l = v.l + [p] %}{% endif %}
+  {% endfor %}
+  {% set blok = namespace(i=-1, s=10**12) %}
+  {% for i in range(0, (v.l | count) - 1) %}
+    {% set s = v.l[i].electricity_price + v.l[i + 1].electricity_price %}
+    {% if s < blok.s %}{% set blok.i = i %}{% set blok.s = s %}{% endif %}
+  {% endfor %}
+  {% if blok.i >= 0 %}
+    {% set st = as_datetime(v.l[blok.i].start_date) %}
+    {% if st > now() and (ns.eind is none or st < ns.eind) %}{% set ns.eind = st %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% set u = namespace(lijst=[]) %}
+{% for p in fc %}
+  {% set st = as_datetime(p.start_date) %}
+  {% if st + timedelta(hours=1) > now() and (ns.eind is none or st < ns.eind) %}
+    {% set deel = (1 - now().minute / 60) if st <= now() else 1 %}
+    {% set u.lijst = u.lijst + [{'prijs': p.electricity_price / 10000000,
+                                 'nodig': profiel[as_local(st).hour] * marge * deel}] %}
+  {% endif %}
+{% endfor %}
+{% set g = namespace(rest=b.kwh, drempel=none) %}
+{% for x in u.lijst | sort(attribute='prijs', reverse=true) %}
+  {% if g.rest > 0 %}{% set g.drempel = x.prijs %}{% set g.rest = g.rest - x.nodig %}{% endif %}
+{% endfor %}
+{% if fc | count == 0 %}{{ vloer }}
+{% else %}{{ ([g.drempel if g.drempel is not none else 9.99, vloer] | max) | round(4) }}{% endif %}

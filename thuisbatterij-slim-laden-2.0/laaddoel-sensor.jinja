@@ -1,0 +1,28 @@
+{#- Helper → Template → Sensor "Batterij laaddoel" (eenheid %): plak dit in het Statussjabloon
+    en vul bovenaan je eigen waarden in. Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-4-het-laaddoel -#}
+{# ===== Vul hier je eigen gegevens in ===== #}
+{# Capaciteit van al je batterijen samen, in kWh #}
+{% set capaciteit_totaal = 10.24 %}
+{# De Forecast.Solar-sensor met de resterende zonneopbrengst van vandaag #}
+{% set zon_sensor = 'sensor.energy_production_today_remaining' %}
+{# Hetzelfde verbruiksprofiel als in stap 3 #}
+{% set profiel = [0.27,0.26,0.26,0.25,0.25,0.31,0.56,0.62,0.54,0.40,0.40,0.40,
+                  0.45,0.45,0.50,0.50,0.60,1.27,0.62,0.65,0.45,0.38,0.30,0.24] %}
+{# ===== Hieronder hoef je niets te veranderen ===== #}
+{% set prijs = states('sensor.zonneplan_current_electricity_tariff') | float(0) %}
+{% set opkomst = as_datetime(states('sensor.sun_next_rising')) %}
+{% set ondergang = as_datetime(states('sensor.sun_next_setting')) %}
+{% if prijs < 0 or opkomst is none or ondergang is none or opkomst < ondergang %}100
+{% else %}
+  {% set zon = states(zon_sensor) | float(0) * 0.8 %}
+  {% set ns = namespace(v=0, t=now()) %}
+  {% for i in range(0, 16) %}
+    {% if ns.t < ondergang %}
+      {% set eind = [ns.t.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1), ondergang] | min %}
+      {% set ns.v = ns.v + profiel[as_local(ns.t).hour] * ((eind - ns.t).total_seconds() / 3600) %}
+      {% set ns.t = eind %}
+    {% endif %}
+  {% endfor %}
+  {% set overschot = [zon - ns.v * 1.15, 0] | max %}
+  {{ ([100 - overschot / capaciteit_totaal * 100, 12] | max) | round(0) | int }}
+{% endif %}

@@ -1,13 +1,17 @@
 # Optioneel: Kaart toevoegen → Handmatig → plak dit.
-# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-4-een-kaart-op-je-dashboard-optioneel
+# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-6-een-kaart-op-je-dashboard-optioneel
 type: entities
 title: Thuisbatterij
 entities:
   - entity: sensor.zonneplan_current_electricity_tariff
     name: Stroomprijs nu
+  - entity: sensor.batterij_dynamische_drempel
+    name: Leveren vanaf
   - entity: input_number.batterij_prijsdrempel
-    name: Leveren boven
+    name: Ondergrens
   - entity: binary_sensor.goedkoopste_2_uur_stroom
     name: Goedkoopste blok (laden)
+  - entity: sensor.batterij_laaddoel
+    name: Laden tot
   - entity: automation.marstek_slim_op_stroomprijs
     name: Slim laden aan
