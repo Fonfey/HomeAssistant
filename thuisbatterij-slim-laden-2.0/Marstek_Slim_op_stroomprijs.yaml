@@ -27,7 +27,9 @@ blueprint:
           description: >-
             Kies je Marstek-batterijen. De blueprint zoekt per batterij zelf de juiste instellingen erbij:
             *Force Mode*, *User Work Mode*, *RS485 Control Mode*, *Set Charge Power* en *Max Discharge Power*.
-            Heb je de entiteit-ID's van de Marstek-integratie hernoemd, dan vindt hij ze niet; gebruik dan de losse YAML.
+            Een andere naam voor je batterij is geen probleem, en entiteit-ID's in het Engels, Nederlands of Duits worden herkend.
+            Heb je de entiteit-ID's zelf hernoemd, dan vindt hij ze niet; de automation stopt dan met een foutmelding.
+            Gebruik in dat geval de losse YAML.
           selector:
             device:
               multiple: true
@@ -113,11 +115,11 @@ variables:
   batterijen: !input battery_devices
   # Alle entiteiten van de gekozen batterijen; daaruit de vijf die deze automation gebruikt.
   alle_entiteiten: "{{ batterijen | map('device_entities') | sum(start=[]) }}"
-  force_modes: "{{ alle_entiteiten | select('match', 'select\\..*force_mode(_\\d+)?$') | list }}"
-  werkmodi: "{{ alle_entiteiten | select('match', 'select\\..*user_work_mode(_\\d+)?$') | list }}"
-  rs485: "{{ alle_entiteiten | select('match', 'switch\\..*rs485_control_mode(_\\d+)?$') | list }}"
-  laadvermogens: "{{ alle_entiteiten | select('match', 'number\\..*set_charge_power(_\\d+)?$') | list }}"
-  ontlaad_entiteiten: "{{ alle_entiteiten | select('match', 'number\\..*max_discharge_power(_\\d+)?$') | list }}"
+  force_modes: "{{ alle_entiteiten | select('match', 'select\\..*(force_mode|geforceerde_modus|erzwungener_modus)(_\\d+)?$') | list }}"
+  werkmodi: "{{ alle_entiteiten | select('match', 'select\\..*(user_work_mode|gebruikersmodus|benutzer_modus)(_\\d+)?$') | list }}"
+  rs485: "{{ alle_entiteiten | select('match', 'switch\\..*(rs485_control_mode|rs485_bedrijfsmodus|rs485_steuermodus)(_\\d+)?$') | list }}"
+  laadvermogens: "{{ alle_entiteiten | select('match', 'number\\..*(set_charge_power|forceer_laadvermogen|ladeleistung_einstellen)(_\\d+)?$') | list }}"
+  ontlaad_entiteiten: "{{ alle_entiteiten | select('match', 'number\\..*(max_discharge_power|max_ontlaadvermogen|maximale_entladeleistung)(_\\d+)?$') | list }}"
   ontlaad_max: !input discharge_power_value
   handmatig: !input manual_automations
 
