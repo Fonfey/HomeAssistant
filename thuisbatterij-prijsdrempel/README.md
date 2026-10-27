@@ -23,6 +23,8 @@ Maak ook de helper **Batterij prijsdrempel** aan: **Helpers → Getal**, min 0, 
 
 ## Samen met de blueprints uit versie 1
 
+De blueprints staan in [`thuisbatterij-blueprints/`](../thuisbatterij-blueprints/).
+
 | Blueprint | Wat je ermee doet |
 |---|---|
 | Laden bij laagste stroomprijs | **Uitzetten**: deze automation doet het laden |
