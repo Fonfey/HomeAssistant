@@ -4,7 +4,7 @@
 
 Blueprints and a dashboard for Home Assistant to smartly charge and discharge a **Marstek Venus home battery** based on the **Zonneplan** electricity price.
 
-> 🆕 **There is a version 2.0** that works better: charge in the cheapest 2 hours and save the battery for the expensive hours, with one automation instead of the price blueprints. See [`thuisbatterij-prijsdrempel/`](../thuisbatterij-prijsdrempel/) and the blog post [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) (in Dutch). The *Opladen*, *Ontladen* and *Veiligheid* blueprints below can still be used alongside it.
+> 🆕 **There is a version 2.0** that works better: charge in the cheapest 2 hours and save the battery for the expensive hours, with one automation instead of the price blueprints. See [`thuisbatterij-slim-laden-2.0/`](../thuisbatterij-slim-laden-2.0/) and the blog post [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) (in Dutch). The *Opladen*, *Ontladen* and *Veiligheid* blueprints below can still be used alongside it.
 
 > 📖 Background on my blog (in Dutch): [Smart home battery charging with Home Assistant and Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/).
 
