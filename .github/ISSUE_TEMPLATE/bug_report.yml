@@ -14,14 +14,17 @@ body:
       label: Onderdeel / Component
       description: Welke blueprint of welk bestand betreft het?
       options:
+        - Thuisbatterij slim laden 2.0 (blueprint of automation)
         - Marstek - Opladen
         - Marstek - Ontladen
         - Marstek - Laden bij laagste stroomprijs
         - Marstek - Ontladen bij hoogste stroomprijs
         - Marstek - Veiligheid
-        - Airco Temperatuur en luchtvochtigheid
-        - Energie-dashboard (EnergyDashboard.yaml)
-        - Helpers (EnergyHelpers.yaml)
+        - Thuisbatterij-dashboard of helpers (thuisbatterij-blueprints)
+        - Energie-overzicht
+        - Meldingen
+        - Wandtablet
+        - Hue Tap Dial
         - README / documentatie
         - Anders / Other
     validations:

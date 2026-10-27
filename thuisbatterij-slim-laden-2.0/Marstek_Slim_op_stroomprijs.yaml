@@ -1,0 +1,264 @@
+blueprint:
+  name: Marstek - Slim op stroomprijs (2.0)
+  description: |
+    Stuurt Marstek Venus-batterijen de hele dag aan op de stroomprijs, met drie standen:
+
+    - **Laden van het net** in het goedkoopste blok van de dag (bijvoorbeeld de goedkoopste 2 uur).
+    - **Sparen** als de prijs onder je prijsdrempel ligt: de batterij ontlaadt niet, zonne-overschot laadt wel bij.
+    - **Leveren** als de prijs op of boven je prijsdrempel ligt: de batterij levert precies wat het huis verbruikt (*anti_feed*), niets aan het net.
+
+    Hij kijkt bij elke prijswissel, bij een wijziging van de drempel of het goedkoopste blok, elk kwartier en na een herstart.
+    Opdrachten gaan alleen naar de batterij als er echt iets moet veranderen.
+
+    Je hebt twee helpers nodig: een **getal** voor de prijsdrempel (€/kWh) en een **binaire sensor** die aan is in het goedkoopste blok.
+    Uitleg, het sjabloon voor die sensor en hoe je de drempel kiest: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/
+  domain: automation
+  author: Jeroen Fonferek
+  source_url: https://github.com/Fonfey/HomeAssistant/blob/main/thuisbatterij-slim-laden-2.0/Marstek_Slim_op_stroomprijs.yaml
+  homeassistant:
+    min_version: "2024.10.0"
+  input:
+    batterijen:
+      name: Batterijen
+      icon: mdi:home-battery
+      input:
+        battery_devices:
+          name: Batterijen
+          description: >-
+            Kies je Marstek-batterijen. De blueprint zoekt per batterij zelf de juiste instellingen erbij:
+            *Force Mode*, *User Work Mode*, *RS485 Control Mode*, *Set Charge Power* en *Max Discharge Power*.
+            Een andere naam voor je batterij is geen probleem, en entiteit-ID's in het Engels, Nederlands of Duits worden herkend.
+            Heb je de entiteit-ID's zelf hernoemd, dan vindt hij ze niet; de automation stopt dan met een foutmelding.
+            Gebruik in dat geval de losse YAML.
+          selector:
+            device:
+              multiple: true
+              filter:
+                - integration: marstek_modbus
+    prijs:
+      name: Stroomprijs
+      icon: mdi:cash-clock
+      input:
+        price_sensor:
+          name: Huidige stroomprijs
+          description: Je all-in stroomprijs van dit moment, bijvoorbeeld `sensor.zonneplan_current_electricity_tariff`.
+          selector:
+            entity:
+              domain: sensor
+        price_threshold:
+          name: Prijsdrempel
+          description: >-
+            Een getal-helper in €/kWh, bijvoorbeeld `input_number.batterij_prijsdrempel`.
+            Boven deze prijs levert de batterij, eronder spaart hij.
+          selector:
+            entity:
+              domain:
+                - input_number
+                - number
+        cheapest_block_sensor:
+          name: Goedkoopste blok
+          description: >-
+            Binaire sensor die aan is tijdens het goedkoopste blok van de dag,
+            bijvoorbeeld `binary_sensor.goedkoopste_2_uur_stroom` (zie de blog voor het sjabloon).
+          selector:
+            entity:
+              domain: binary_sensor
+    instellingen:
+      name: Instellingen
+      icon: mdi:cog
+      collapsed: true
+      input:
+        charge_power_value:
+          name: Laadvermogen per batterij
+          description: Vermogen waarmee elke batterij laadt in het goedkoopste blok. Let op wat je aansluiting en groepen aankunnen.
+          default: 2500
+          selector:
+            number:
+              min: 100
+              max: 2500
+              step: 100
+              unit_of_measurement: W
+              mode: slider
+        discharge_power_value:
+          name: Maximaal ontlaadvermogen bij leveren
+          description: Bovengrens als de batterij levert. De batterij levert nooit meer dan het huis verbruikt.
+          default: 2500
+          selector:
+            number:
+              min: 100
+              max: 2500
+              step: 100
+              unit_of_measurement: W
+              mode: slider
+        restart_delay:
+          name: Wachttijd na herstart
+          description: Zo lang wachten na een herstart van Home Assistant, zodat de batterij-integratie eerst verbinding heeft.
+          default:
+            minutes: 2
+          selector:
+            duration: {}
+        manual_automations:
+          name: Handmatig laden of ontladen (optioneel)
+          description: >-
+            Automations die je met de hand start om te laden of ontladen, zoals *Marstek - Opladen* en
+            *Marstek - Ontladen*. Zolang een daarvan draait, doet deze automation niets.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              domain: automation
+
+mode: queued
+max: 5
+
+variables:
+  batterijen: !input battery_devices
+  # Alle entiteiten van de gekozen batterijen; daaruit de vijf die deze automation gebruikt.
+  alle_entiteiten: "{{ batterijen | map('device_entities') | sum(start=[]) }}"
+  force_modes: "{{ alle_entiteiten | select('match', 'select\\..*(force_mode|geforceerde_modus|erzwungener_modus)(_\\d+)?$') | list }}"
+  werkmodi: "{{ alle_entiteiten | select('match', 'select\\..*(user_work_mode|gebruikersmodus|benutzer_modus)(_\\d+)?$') | list }}"
+  rs485: "{{ alle_entiteiten | select('match', 'switch\\..*(rs485_control_mode|rs485_bedrijfsmodus|rs485_steuermodus)(_\\d+)?$') | list }}"
+  laadvermogens: "{{ alle_entiteiten | select('match', 'number\\..*(set_charge_power|forceer_laadvermogen|ladeleistung_einstellen)(_\\d+)?$') | list }}"
+  ontlaad_entiteiten: "{{ alle_entiteiten | select('match', 'number\\..*(max_discharge_power|max_ontlaadvermogen|maximale_entladeleistung)(_\\d+)?$') | list }}"
+  ontlaad_max: !input discharge_power_value
+  handmatig: !input manual_automations
+
+triggers:
+  - trigger: state
+    entity_id: !input cheapest_block_sensor
+    id: blok
+  - trigger: state
+    entity_id: !input price_sensor
+    id: prijs
+  - trigger: state
+    entity_id: !input price_threshold
+    id: drempel
+  - trigger: time_pattern
+    minutes: /15
+    id: controle
+  - trigger: homeassistant
+    event: start
+    id: herstart
+
+conditions:
+  # Niet ingrijpen zolang je zelf laadt of ontlaadt met een andere automation.
+  - condition: template
+    value_template: "{{ handmatig | map('state_attr', 'current') | map('int', 0) | sum == 0 }}"
+
+actions:
+  - if:
+      - condition: template
+        value_template: >-
+          {{ [force_modes, werkmodi, rs485, laadvermogens, ontlaad_entiteiten]
+             | map('count') | select('ne', batterijen | count) | list | count > 0 }}
+    then:
+      - stop: >-
+          Niet bij elke batterij zijn Force Mode, User Work Mode, RS485 Control Mode, Set Charge Power
+          en Max Discharge Power gevonden. Controleer of die entiteiten zijn ingeschakeld.
+        error: true
+  - if:
+      - condition: trigger
+        id: herstart
+    then:
+      - delay: !input restart_delay
+
+  - choose:
+      # Stand 1: goedkoopste blok, geforceerd laden van het net
+      - alias: "Goedkoopste blok: laden van het net"
+        conditions:
+          - condition: state
+            entity_id: !input cheapest_block_sensor
+            state: "on"
+        sequence:
+          - if:
+              # Alleen iets doen als de batterijen nog niet geforceerd laden
+              - condition: template
+                value_template: >-
+                  {{ force_modes | map('states') | select('ne', 'charge') | list | count > 0
+                     or rs485 | map('states') | select('ne', 'on') | list | count > 0 }}
+            then:
+              - action: select.select_option
+                target:
+                  entity_id: "{{ force_modes }}"
+                data:
+                  option: standby
+              - action: select.select_option
+                target:
+                  entity_id: "{{ werkmodi }}"
+                data:
+                  option: anti_feed
+              - action: switch.turn_off
+                target:
+                  entity_id: "{{ rs485 }}"
+              - delay:
+                  seconds: 10
+              - action: number.set_value
+                target:
+                  entity_id: "{{ laadvermogens }}"
+                data:
+                  value: !input charge_power_value
+              - action: select.select_option
+                target:
+                  entity_id: "{{ force_modes }}"
+                data:
+                  option: charge
+              - action: switch.turn_on
+                target:
+                  entity_id: "{{ rs485 }}"
+    default:
+      # Niet in het goedkoopste blok: eerst terug naar de normale stand (anti_feed)
+      - alias: "Terug naar de normale stand"
+        if:
+          - condition: template
+            value_template: >-
+              {{ rs485 | map('states') | select('eq', 'on') | list | count > 0
+                 or werkmodi | map('states') | select('ne', 'anti_feed') | list | count > 0 }}
+        then:
+          - action: select.select_option
+            target:
+              entity_id: "{{ force_modes }}"
+            data:
+              option: standby
+          - action: select.select_option
+            target:
+              entity_id: "{{ werkmodi }}"
+            data:
+              option: anti_feed
+          - action: switch.turn_off
+            target:
+              entity_id: "{{ rs485 }}"
+      - choose:
+          # Stand 2: goedkoop, de batterij spaart
+          - alias: "Onder de drempel: batterij spaart"
+            conditions:
+              - condition: numeric_state
+                entity_id: !input price_sensor
+                below: !input price_threshold
+            sequence:
+              - if:
+                  # Alleen als een batterij nog mag ontladen
+                  - condition: template
+                    value_template: >-
+                      {{ ontlaad_entiteiten | select('has_value') | map('states') | map('float', 0)
+                         | select('>', 0) | list | count > 0 }}
+                then:
+                  - action: number.set_value
+                    target:
+                      entity_id: "{{ ontlaad_entiteiten }}"
+                    data:
+                      value: 0
+        # Stand 3: op of boven de drempel, de batterij levert aan het huis
+        default:
+          - alias: "Boven de drempel: batterij levert"
+            if:
+              # Alleen als een batterij nog niet op het maximum staat
+              - condition: template
+                value_template: >-
+                  {{ ontlaad_entiteiten | select('has_value') | map('states') | map('float', 0)
+                     | select('<', ontlaad_max | float) | list | count > 0 }}
+            then:
+              - action: number.set_value
+                target:
+                  entity_id: "{{ ontlaad_entiteiten }}"
+                data:
+                  value: !input discharge_power_value

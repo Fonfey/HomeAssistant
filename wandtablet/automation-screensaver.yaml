@@ -1,0 +1,38 @@
+# Vervang het adres door dat van je eigen dashboard (lokaal IP-adres van Home Assistant).
+# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#de-screensaver-aansturen-vanuit-home-assistant
+alias: Wandtablet - screensaver
+triggers:
+  - trigger: state
+    entity_id: sensor.wandtablet_huidige_pagina
+    to: http://192.168.1.10:8123/dashboard-wall/home
+    for: '00:00:30'
+    id: hoofdscherm
+  - trigger: state
+    entity_id: input_boolean.wallpanel_screensaver
+    to: 'off'
+    for: '00:02:30'
+    id: weggetikt
+  - trigger: state
+    entity_id: sensor.wandtablet_huidige_pagina
+    from: http://192.168.1.10:8123/dashboard-wall/home
+    id: andere_pagina
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: [hoofdscherm, weggetikt]
+          - condition: state
+            entity_id: sensor.wandtablet_huidige_pagina
+            state: http://192.168.1.10:8123/dashboard-wall/home
+        sequence:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.wallpanel_screensaver
+      - conditions:
+          - condition: trigger
+            id: andere_pagina
+        sequence:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.wallpanel_screensaver
+mode: restart

@@ -8,12 +8,12 @@ Alleen de laatste versie op de `main`-branch wordt ondersteund. Importeer een bl
 
 ## Wat valt hieronder?
 
-Deze blueprints sturen een thuisbatterij en een airco aan. Meld daarom niet alleen klassieke beveiligingsproblemen, maar ook fouten die schade of gevaar kunnen veroorzaken, bijvoorbeeld:
+Deze blueprints en automations sturen onder meer een thuisbatterij en lampen aan. Meld daarom niet alleen klassieke beveiligingsproblemen, maar ook fouten die schade of gevaar kunnen veroorzaken, bijvoorbeeld:
 
-- een batterij die in geforceerd laden of ontladen blijft hangen, ook als [`Marstek_Veiligheid.yaml`](Marstek_Veiligheid.yaml) actief is;
+- een batterij die in geforceerd laden of ontladen blijft hangen, ook als [`Marstek_Veiligheid.yaml`](thuisbatterij-blueprints/Marstek_Veiligheid.yaml) actief is;
 - laad- of ontlaadvermogen dat hoger wordt ingesteld dan opgegeven;
 - een template of instelling die gevoelige gegevens kan lekken, zoals tokens of locatie;
-- een manier waarop iemand van buitenaf de batterij of airco kan aansturen via deze configuratie.
+- een manier waarop iemand van buitenaf de batterij of andere apparaten kan aansturen via deze configuratie, bijvoorbeeld via een webhook.
 
 Gewone bugs zonder risico op schade kun je gewoon als [issue](../../issues/new/choose) melden.
 
@@ -29,12 +29,12 @@ Dit is een hobbyproject dat in vrije tijd wordt onderhouden. Je krijgt binnen on
 
 ## Disclaimer
 
-Gebruik deze blueprints op eigen risico, zoals ook in de [README](README.md#let-op) staat. Controleer na het instellen altijd of je batterijen en airco doen wat je verwacht.
+Gebruik deze blueprints op eigen risico, zoals ook in de [README van de thuisbatterij](thuisbatterij-blueprints/README.md#let-op) staat. Controleer na het instellen altijd of je batterijen en andere apparaten doen wat je verwacht.
 
 ---
 
 # Security Policy (English)
 
-Only the latest version on `main` is supported. Because these blueprints control a home battery and an air conditioner, please also report bugs that could cause damage, such as a battery stuck in forced charge or discharge, or power set higher than configured.
+Only the latest version on `main` is supported. Because these blueprints and automations control a home battery and other devices, please also report bugs that could cause damage, such as a battery stuck in forced charge or discharge, or power set higher than configured.
 
 **Do not open a public issue for security problems.** Use **Report a vulnerability** on the [Security tab](../../security/advisories/new) instead. Expect a first response within about a week; this is a hobby project maintained in spare time. Use at your own risk.

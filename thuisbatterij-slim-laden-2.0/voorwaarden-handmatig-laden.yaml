@@ -1,0 +1,11 @@
+# Alleen als je de blueprints Opladen/Ontladen als handmatige knop houdt: plak dit in de automation, direct boven `actions:`.
+# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#samen-met-de-blueprints-uit-de-eerste-blog
+conditions:
+  - condition: numeric_state
+    entity_id: automation.marstek_opladen
+    attribute: current
+    below: 1
+  - condition: numeric_state
+    entity_id: automation.marstek_ontladen
+    attribute: current
+    below: 1

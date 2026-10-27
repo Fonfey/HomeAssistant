@@ -1,0 +1,58 @@
+{#- Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/ -#}
+{#- ================================================================
+    ENERGIE-OVERZICHT · STAP 1: VUL HIER JE EIGEN SENSOREN IN
+    Dit is de enige plek die je hoeft aan te passen.
+    - Elke meter is een OPLOPENDE totaalstand in kWh.
+    - Meerdere meters (bijv. twee batterijen)? Zet ze allebei in de lijst.
+    - Geen batterij of geen zonnepanelen? Laat de lijst leeg: []
+    - De prijs is je all-in stroomprijs in €/kWh (incl. belasting) van dit moment:
+      een uurprijs of een kwartierprijs, net hoe je leverancier afrekent.
+    - Gas is een OPLOPENDE totaalstand in m³, met je all-in gasprijs in €/m³.
+      Geen gas (all-electric)? Laat de lijst leeg: []
+    ================================================================ -#}
+{%- set bronnen = {
+  'afname':        ['sensor.JOUW_METER_AFNAME'],
+  'teruglevering': ['sensor.JOUW_METER_TERUGLEVERING'],
+  'zon':           ['sensor.JOUW_ZONNEPANELEN_TOTAAL'],
+  'laden':         ['sensor.JOUW_BATTERIJ_GELADEN'],
+  'ontladen':      ['sensor.JOUW_BATTERIJ_ONTLADEN'],
+  'gas':           ['sensor.JOUW_GASMETER'],
+} -%}
+{%- set prijs_sensor = 'sensor.JOUW_STROOMPRIJS' -%}
+{%- set gasprijs_sensor = 'sensor.JOUW_GASPRIJS' -%}
+
+{#- ================================================================
+    Hieronder hoef je niets te veranderen.
+    ================================================================ -#}
+
+{#- Telt de meters van één bron op (kWh, gas in m³). -#}
+{% macro bron(naam) -%}
+{%- set ns = namespace(som=0) -%}
+{%- for e in bronnen[naam] -%}{%- set ns.som = ns.som + states(e) | float(0) -%}{%- endfor -%}
+{{ ns.som | round(3) }}
+{%- endmacro %}
+
+{#- True als alle meters van een bron een getal geven. -#}
+{% macro bron_ok(naam) -%}
+{{ bronnen[naam] | map('states') | select('is_number') | list | count == bronnen[naam] | count }}
+{%- endmacro %}
+
+{#- Telt per periode (fmt) de kWh- of m³-stappen van een bron maal de prijs van dat moment.
+    what: 'eur' (bedrag), 'kwh' of 'm3' (hoeveelheid) of 'meter' (laatst geziene meterstand).
+    reset=true zet de teller op nul vanaf de huidige meterstand. -#}
+{% macro energie_calc(naam, fmt, this, what, reset=false) -%}
+{%- set v = states('sensor.energie_bron_' ~ naam) -%}
+{%- set nu = (v | float | round(3)) if is_number(v) else none -%}
+{%- set prev = this.attributes.get('meterstand') -%}
+{%- set prijs = states(gasprijs_sensor if naam == 'gas' else prijs_sensor) -%}
+{%- set zelfde = (this.attributes.get('periode') | string) == now().strftime(fmt) and not reset -%}
+{%- set d = (nu - prev | float) if (nu is not none and is_number(prev) and not reset) else 0 -%}
+{%- set tel = is_number(prijs) and 0 < d < 5 -%}
+{%- if what == 'eur' -%}
+{{ ((this.state | float(0) if zelfde else 0) + (d * prijs | float if tel else 0)) | round(4) }}
+{%- elif what in ['kwh', 'm3'] -%}
+{{ ((this.attributes.get(what, 0) | float(0) if zelfde else 0) + (d if tel else 0)) | round(3) }}
+{%- else -%}
+{{ nu if (nu is not none and (reset or is_number(prijs) or not is_number(prev))) else prev }}
+{%- endif -%}
+{%- endmacro %}

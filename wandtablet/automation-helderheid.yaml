@@ -1,0 +1,18 @@
+# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#de-screensaver-aansturen-vanuit-home-assistant
+alias: Wandtablet - helderheid bij screensaver
+triggers:
+  - trigger: state
+    entity_id: input_boolean.wallpanel_screensaver
+    to: 'on'
+    id: screensaver
+  - trigger: state
+    entity_id: input_boolean.wallpanel_screensaver
+    to: 'off'
+    id: actief
+actions:
+  - action: number.set_value
+    target:
+      entity_id: number.wandtablet_schermhelderheid
+    data:
+      value: "{{ 35 if trigger.id == 'screensaver' else 100 }}"
+mode: restart

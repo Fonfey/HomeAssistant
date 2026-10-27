@@ -1,0 +1,442 @@
+# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/
+# Energie-overzicht: plak dit bestand ongewijzigd in packages/energie_overzicht.yaml
+# Je eigen sensoren stel je in bovenaan custom_templates/energie.jinja.
+template:
+  # 1. Bronnen: de stroommeters uit energie.jinja opgeteld per soort (in kWh)
+  - sensor:
+      - name: "Energie bron afname"
+        unique_id: energie_bron_afname
+        default_entity_id: sensor.energie_bron_afname
+        unit_of_measurement: kWh
+        device_class: energy
+        icon: mdi:transmission-tower-import
+        state: "{% from 'energie.jinja' import bron %}{{ bron('afname') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('afname') }}"
+      - name: "Energie bron teruglevering"
+        unique_id: energie_bron_teruglevering
+        default_entity_id: sensor.energie_bron_teruglevering
+        unit_of_measurement: kWh
+        device_class: energy
+        icon: mdi:transmission-tower-export
+        state: "{% from 'energie.jinja' import bron %}{{ bron('teruglevering') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('teruglevering') }}"
+      - name: "Energie bron zon"
+        unique_id: energie_bron_zon
+        default_entity_id: sensor.energie_bron_zon
+        unit_of_measurement: kWh
+        device_class: energy
+        icon: mdi:solar-power
+        state: "{% from 'energie.jinja' import bron %}{{ bron('zon') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('zon') }}"
+      - name: "Energie bron laden"
+        unique_id: energie_bron_laden
+        default_entity_id: sensor.energie_bron_laden
+        unit_of_measurement: kWh
+        device_class: energy
+        icon: mdi:battery-arrow-up
+        state: "{% from 'energie.jinja' import bron %}{{ bron('laden') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('laden') }}"
+      - name: "Energie bron ontladen"
+        unique_id: energie_bron_ontladen
+        default_entity_id: sensor.energie_bron_ontladen
+        unit_of_measurement: kWh
+        device_class: energy
+        icon: mdi:battery-arrow-down
+        state: "{% from 'energie.jinja' import bron %}{{ bron('ontladen') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('ontladen') }}"
+  # 2. Tellers: elke kWh-stap maal de stroomprijs van dat moment, per dag, maand en jaar
+  - triggers:
+      - trigger: state
+        entity_id:
+          - sensor.energie_bron_afname
+          - sensor.energie_bron_teruglevering
+          - sensor.energie_bron_zon
+          - sensor.energie_bron_laden
+          - sensor.energie_bron_ontladen
+      - trigger: time
+        at: "00:00:00"
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: event_template_reloaded
+      - trigger: event
+        event_type: energie_overzicht_reset
+        id: reset
+    sensor:
+      - name: "Energie Van het net vandaag"
+        unique_id: energie_afname_dag
+        default_entity_id: sensor.energie_afname_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-import
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m-%d', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Van het net deze maand"
+        unique_id: energie_afname_maand
+        default_entity_id: sensor.energie_afname_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-import
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Van het net dit jaar"
+        unique_id: energie_afname_jaar
+        default_entity_id: sensor.energie_afname_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-import
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('afname', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
+      - name: "Energie Teruggeleverd vandaag"
+        unique_id: energie_teruglevering_dag
+        default_entity_id: sensor.energie_teruglevering_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-export
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m-%d', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Teruggeleverd deze maand"
+        unique_id: energie_teruglevering_maand
+        default_entity_id: sensor.energie_teruglevering_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-export
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Teruggeleverd dit jaar"
+        unique_id: energie_teruglevering_jaar
+        default_entity_id: sensor.energie_teruglevering_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:transmission-tower-export
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('teruglevering', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
+      - name: "Energie Zonnestroom vandaag"
+        unique_id: energie_zon_dag
+        default_entity_id: sensor.energie_zon_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:solar-power
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m-%d', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Zonnestroom deze maand"
+        unique_id: energie_zon_maand
+        default_entity_id: sensor.energie_zon_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:solar-power
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Zonnestroom dit jaar"
+        unique_id: energie_zon_jaar
+        default_entity_id: sensor.energie_zon_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:solar-power
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('zon', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
+      - name: "Energie Batterij geladen vandaag"
+        unique_id: energie_laden_dag
+        default_entity_id: sensor.energie_laden_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-up
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m-%d', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Batterij geladen deze maand"
+        unique_id: energie_laden_maand
+        default_entity_id: sensor.energie_laden_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-up
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Batterij geladen dit jaar"
+        unique_id: energie_laden_jaar
+        default_entity_id: sensor.energie_laden_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-up
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('laden', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
+      - name: "Energie Batterij ontladen vandaag"
+        unique_id: energie_ontladen_dag
+        default_entity_id: sensor.energie_ontladen_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-down
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m-%d', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Batterij ontladen deze maand"
+        unique_id: energie_ontladen_maand
+        default_entity_id: sensor.energie_ontladen_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-down
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Batterij ontladen dit jaar"
+        unique_id: energie_ontladen_jaar
+        default_entity_id: sensor.energie_ontladen_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-arrow-down
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          kwh: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y', this, 'kwh', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('ontladen', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
+  # 3. Uitkomsten per periode
+  - sensor:
+      - name: "Energie Netto stroomkosten vandaag"
+        unique_id: energie_netto_betaald_dag
+        default_entity_id: sensor.energie_netto_betaald_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash
+        availability: "{{ has_value('sensor.energie_afname_dag') and has_value('sensor.energie_teruglevering_dag') and has_value('sensor.energie_zon_dag') and has_value('sensor.energie_laden_dag') and has_value('sensor.energie_ontladen_dag') }}"
+        state: "{{ (states('sensor.energie_afname_dag')|float(0) - states('sensor.energie_teruglevering_dag')|float(0)) | round(2) }}"
+      - name: "Energie Batterijwinst vandaag"
+        unique_id: energie_slim_laden_dag
+        default_entity_id: sensor.energie_slim_laden_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-sync
+        availability: "{{ has_value('sensor.energie_afname_dag') and has_value('sensor.energie_teruglevering_dag') and has_value('sensor.energie_zon_dag') and has_value('sensor.energie_laden_dag') and has_value('sensor.energie_ontladen_dag') }}"
+        state: "{{ (states('sensor.energie_ontladen_dag')|float(0) - states('sensor.energie_laden_dag')|float(0)) | round(2) }}"
+      - name: "Energie Totaal bespaard vandaag"
+        unique_id: energie_besparing_dag
+        default_entity_id: sensor.energie_besparing_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:piggy-bank
+        availability: "{{ has_value('sensor.energie_afname_dag') and has_value('sensor.energie_teruglevering_dag') and has_value('sensor.energie_zon_dag') and has_value('sensor.energie_laden_dag') and has_value('sensor.energie_ontladen_dag') }}"
+        state: "{{ (states('sensor.energie_zon_dag')|float(0) + states('sensor.energie_ontladen_dag')|float(0) - states('sensor.energie_laden_dag')|float(0)) | round(2) }}"
+      - name: "Energie Zonder zon en batterij vandaag"
+        unique_id: energie_zonder_zon_batterij_dag
+        default_entity_id: sensor.energie_zonder_zon_batterij_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash-remove
+        availability: "{{ has_value('sensor.energie_afname_dag') and has_value('sensor.energie_teruglevering_dag') and has_value('sensor.energie_zon_dag') and has_value('sensor.energie_laden_dag') and has_value('sensor.energie_ontladen_dag') }}"
+        state: "{{ (states('sensor.energie_afname_dag')|float(0) - states('sensor.energie_teruglevering_dag')|float(0) + states('sensor.energie_zon_dag')|float(0) + states('sensor.energie_ontladen_dag')|float(0) - states('sensor.energie_laden_dag')|float(0)) | round(2) }}"
+      - name: "Energie Netto stroomkosten deze maand"
+        unique_id: energie_netto_betaald_maand
+        default_entity_id: sensor.energie_netto_betaald_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash
+        availability: "{{ has_value('sensor.energie_afname_maand') and has_value('sensor.energie_teruglevering_maand') and has_value('sensor.energie_zon_maand') and has_value('sensor.energie_laden_maand') and has_value('sensor.energie_ontladen_maand') }}"
+        state: "{{ (states('sensor.energie_afname_maand')|float(0) - states('sensor.energie_teruglevering_maand')|float(0)) | round(2) }}"
+      - name: "Energie Batterijwinst deze maand"
+        unique_id: energie_slim_laden_maand
+        default_entity_id: sensor.energie_slim_laden_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-sync
+        availability: "{{ has_value('sensor.energie_afname_maand') and has_value('sensor.energie_teruglevering_maand') and has_value('sensor.energie_zon_maand') and has_value('sensor.energie_laden_maand') and has_value('sensor.energie_ontladen_maand') }}"
+        state: "{{ (states('sensor.energie_ontladen_maand')|float(0) - states('sensor.energie_laden_maand')|float(0)) | round(2) }}"
+      - name: "Energie Totaal bespaard deze maand"
+        unique_id: energie_besparing_maand
+        default_entity_id: sensor.energie_besparing_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:piggy-bank
+        availability: "{{ has_value('sensor.energie_afname_maand') and has_value('sensor.energie_teruglevering_maand') and has_value('sensor.energie_zon_maand') and has_value('sensor.energie_laden_maand') and has_value('sensor.energie_ontladen_maand') }}"
+        state: "{{ (states('sensor.energie_zon_maand')|float(0) + states('sensor.energie_ontladen_maand')|float(0) - states('sensor.energie_laden_maand')|float(0)) | round(2) }}"
+      - name: "Energie Zonder zon en batterij deze maand"
+        unique_id: energie_zonder_zon_batterij_maand
+        default_entity_id: sensor.energie_zonder_zon_batterij_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash-remove
+        availability: "{{ has_value('sensor.energie_afname_maand') and has_value('sensor.energie_teruglevering_maand') and has_value('sensor.energie_zon_maand') and has_value('sensor.energie_laden_maand') and has_value('sensor.energie_ontladen_maand') }}"
+        state: "{{ (states('sensor.energie_afname_maand')|float(0) - states('sensor.energie_teruglevering_maand')|float(0) + states('sensor.energie_zon_maand')|float(0) + states('sensor.energie_ontladen_maand')|float(0) - states('sensor.energie_laden_maand')|float(0)) | round(2) }}"
+      - name: "Energie Netto stroomkosten dit jaar"
+        unique_id: energie_netto_betaald_jaar
+        default_entity_id: sensor.energie_netto_betaald_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash
+        availability: "{{ has_value('sensor.energie_afname_jaar') and has_value('sensor.energie_teruglevering_jaar') and has_value('sensor.energie_zon_jaar') and has_value('sensor.energie_laden_jaar') and has_value('sensor.energie_ontladen_jaar') }}"
+        state: "{{ (states('sensor.energie_afname_jaar')|float(0) - states('sensor.energie_teruglevering_jaar')|float(0)) | round(2) }}"
+      - name: "Energie Batterijwinst dit jaar"
+        unique_id: energie_slim_laden_jaar
+        default_entity_id: sensor.energie_slim_laden_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:battery-sync
+        availability: "{{ has_value('sensor.energie_afname_jaar') and has_value('sensor.energie_teruglevering_jaar') and has_value('sensor.energie_zon_jaar') and has_value('sensor.energie_laden_jaar') and has_value('sensor.energie_ontladen_jaar') }}"
+        state: "{{ (states('sensor.energie_ontladen_jaar')|float(0) - states('sensor.energie_laden_jaar')|float(0)) | round(2) }}"
+      - name: "Energie Totaal bespaard dit jaar"
+        unique_id: energie_besparing_jaar
+        default_entity_id: sensor.energie_besparing_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:piggy-bank
+        availability: "{{ has_value('sensor.energie_afname_jaar') and has_value('sensor.energie_teruglevering_jaar') and has_value('sensor.energie_zon_jaar') and has_value('sensor.energie_laden_jaar') and has_value('sensor.energie_ontladen_jaar') }}"
+        state: "{{ (states('sensor.energie_zon_jaar')|float(0) + states('sensor.energie_ontladen_jaar')|float(0) - states('sensor.energie_laden_jaar')|float(0)) | round(2) }}"
+      - name: "Energie Zonder zon en batterij dit jaar"
+        unique_id: energie_zonder_zon_batterij_jaar
+        default_entity_id: sensor.energie_zonder_zon_batterij_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:cash-remove
+        availability: "{{ has_value('sensor.energie_afname_jaar') and has_value('sensor.energie_teruglevering_jaar') and has_value('sensor.energie_zon_jaar') and has_value('sensor.energie_laden_jaar') and has_value('sensor.energie_ontladen_jaar') }}"
+        state: "{{ (states('sensor.energie_afname_jaar')|float(0) - states('sensor.energie_teruglevering_jaar')|float(0) + states('sensor.energie_zon_jaar')|float(0) + states('sensor.energie_ontladen_jaar')|float(0) - states('sensor.energie_laden_jaar')|float(0)) | round(2) }}"
+  # 4. Gas: de gasmeter (m³) en de totale energiekosten (stroom + gas)
+  - sensor:
+      - name: "Energie bron gas"
+        unique_id: energie_bron_gas
+        default_entity_id: sensor.energie_bron_gas
+        unit_of_measurement: m³
+        device_class: gas
+        icon: mdi:fire
+        state: "{% from 'energie.jinja' import bron %}{{ bron('gas') }}"
+        availability: "{% from 'energie.jinja' import bron_ok %}{{ bron_ok('gas') }}"
+      - name: "Energie Stroom en gas vandaag"
+        unique_id: energie_stroom_en_gas_dag
+        default_entity_id: sensor.energie_stroom_en_gas_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:home-lightning-bolt
+        availability: "{{ has_value('sensor.energie_afname_dag') and has_value('sensor.energie_teruglevering_dag') and has_value('sensor.energie_gas_dag') }}"
+        state: "{{ (states('sensor.energie_afname_dag')|float(0) - states('sensor.energie_teruglevering_dag')|float(0) + states('sensor.energie_gas_dag')|float(0)) | round(2) }}"
+      - name: "Energie Stroom en gas deze maand"
+        unique_id: energie_stroom_en_gas_maand
+        default_entity_id: sensor.energie_stroom_en_gas_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:home-lightning-bolt
+        availability: "{{ has_value('sensor.energie_afname_maand') and has_value('sensor.energie_teruglevering_maand') and has_value('sensor.energie_gas_maand') }}"
+        state: "{{ (states('sensor.energie_afname_maand')|float(0) - states('sensor.energie_teruglevering_maand')|float(0) + states('sensor.energie_gas_maand')|float(0)) | round(2) }}"
+      - name: "Energie Stroom en gas dit jaar"
+        unique_id: energie_stroom_en_gas_jaar
+        default_entity_id: sensor.energie_stroom_en_gas_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:home-lightning-bolt
+        availability: "{{ has_value('sensor.energie_afname_jaar') and has_value('sensor.energie_teruglevering_jaar') and has_value('sensor.energie_gas_jaar') }}"
+        state: "{{ (states('sensor.energie_afname_jaar')|float(0) - states('sensor.energie_teruglevering_jaar')|float(0) + states('sensor.energie_gas_jaar')|float(0)) | round(2) }}"
+  # 5. Gas-tellers: elke m³-stap maal de gasprijs van dat moment, per dag, maand en jaar
+  - triggers:
+      - trigger: state
+        entity_id: sensor.energie_bron_gas
+      - trigger: time
+        at: "00:00:00"
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: event_template_reloaded
+      - trigger: event
+        event_type: energie_overzicht_reset
+        id: reset
+    sensor:
+      - name: "Energie Gas vandaag"
+        unique_id: energie_gas_dag
+        default_entity_id: sensor.energie_gas_dag
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:fire
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m-%d', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          m3: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m-%d', this, 'm3', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m-%d', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m-%d') }}"
+      - name: "Energie Gas deze maand"
+        unique_id: energie_gas_maand
+        default_entity_id: sensor.energie_gas_maand
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:fire
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          m3: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m', this, 'm3', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y-%m', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y-%m') }}"
+      - name: "Energie Gas dit jaar"
+        unique_id: energie_gas_jaar
+        default_entity_id: sensor.energie_gas_jaar
+        unit_of_measurement: "€"
+        device_class: monetary
+        state_class: total
+        icon: mdi:fire
+        state: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y', this, 'eur', trigger.id == 'reset') }}"
+        attributes:
+          m3: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y', this, 'm3', trigger.id == 'reset') }}"
+          meterstand: "{% from 'energie.jinja' import energie_calc %}{{ energie_calc('gas', '%Y', this, 'meter', trigger.id == 'reset') }}"
+          periode: "{{ now().strftime('%Y') }}"
