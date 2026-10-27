@@ -3,15 +3,18 @@ blueprint:
   description: |
     Stuurt Marstek Venus-batterijen de hele dag aan op de stroomprijs, met drie standen:
 
-    - **Laden van het net** in het goedkoopste blok van de dag (bijvoorbeeld de goedkoopste 2 uur).
-    - **Sparen** als de prijs onder je prijsdrempel ligt: de batterij ontlaadt niet, zonne-overschot laadt wel bij.
-    - **Leveren** als de prijs op of boven je prijsdrempel ligt: de batterij levert precies wat het huis verbruikt (*anti_feed*), niets aan het net.
+    - **Laden van het net** in het goedkoopste blok van de dag (bijvoorbeeld de goedkoopste 2 uur), optioneel tot een laaddoel.
+    - **Sparen** als de prijs onder je drempel ligt: de batterij ontlaadt niet, zonne-overschot laadt wel bij.
+    - **Leveren** als de prijs op of boven je drempel ligt: de batterij levert precies wat het huis verbruikt (*anti_feed*), niets aan het net.
+
+    Als drempel kies je een vaste prijs (getal-helper) of de sensor **Batterij dynamische drempel**, die alleen de duurste uren tot het volgende laadblok vrijgeeft.
+    Met de sensor **Batterij laaddoel** laadt hij overdag alleen tot een percentage dat ruimte laat voor verwachte zonnestroom.
 
     Hij kijkt bij elke prijswissel, bij een wijziging van de drempel of het goedkoopste blok, elk kwartier en na een herstart.
     Opdrachten gaan alleen naar de batterij als er echt iets moet veranderen.
 
-    Je hebt twee helpers nodig: een **getal** voor de prijsdrempel (€/kWh) en een **binaire sensor** die aan is in het goedkoopste blok.
-    Uitleg, het sjabloon voor die sensor en hoe je de drempel kiest: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/
+    Je hebt minstens een **drempel** (getal-helper of sensor in €/kWh) en een **binaire sensor** nodig die aan is in het goedkoopste blok.
+    Uitleg en de sjablonen voor de sensoren: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/
   domain: automation
   author: Jeroen Fonferek
   source_url: https://github.com/Fonfey/HomeAssistant/blob/main/thuisbatterij-slim-laden-2.0/Marstek_Slim_op_stroomprijs.yaml
@@ -46,15 +49,16 @@ blueprint:
             entity:
               domain: sensor
         price_threshold:
-          name: Prijsdrempel
+          name: Drempel
           description: >-
-            Een getal-helper in €/kWh, bijvoorbeeld `input_number.batterij_prijsdrempel`.
-            Boven deze prijs levert de batterij, eronder spaart hij.
+            Boven deze prijs (€/kWh) levert de batterij, eronder spaart hij. Kies een vaste prijs, bijvoorbeeld
+            `input_number.batterij_prijsdrempel`, of de dynamische drempel, bijvoorbeeld `sensor.batterij_dynamische_drempel`.
           selector:
             entity:
               domain:
                 - input_number
                 - number
+                - sensor
         cheapest_block_sensor:
           name: Goedkoopste blok
           description: >-
@@ -63,6 +67,16 @@ blueprint:
           selector:
             entity:
               domain: binary_sensor
+        charge_target:
+          name: Laaddoel (optioneel)
+          description: >-
+            Sensor met het percentage waartoe de batterijen in het goedkoopste blok laden, bijvoorbeeld
+            `sensor.batterij_laaddoel`. Leeg = altijd laden tot de batterij vol is.
+          default: []
+          selector:
+            entity:
+              multiple: true
+              domain: sensor
     instellingen:
       name: Instellingen
       icon: mdi:cog
@@ -111,6 +125,11 @@ blueprint:
 mode: queued
 max: 5
 
+# Voor de trigger op het laaddoel (triggers kunnen geen gewone variabelen gebruiken).
+trigger_variables:
+  t_batterijen: !input battery_devices
+  t_laaddoel: !input charge_target
+
 variables:
   batterijen: !input battery_devices
   # Alle entiteiten van de gekozen batterijen; daaruit de vijf die deze automation gebruikt.
@@ -120,6 +139,13 @@ variables:
   rs485: "{{ alle_entiteiten | select('match', 'switch\\..*(rs485_control_mode|rs485_bedrijfsmodus|rs485_steuermodus)(_\\d+)?$') | list }}"
   laadvermogens: "{{ alle_entiteiten | select('match', 'number\\..*(set_charge_power|forceer_laadvermogen|ladeleistung_einstellen)(_\\d+)?$') | list }}"
   ontlaad_entiteiten: "{{ alle_entiteiten | select('match', 'number\\..*(max_discharge_power|max_ontlaadvermogen|maximale_entladeleistung)(_\\d+)?$') | list }}"
+  soc_sensoren: "{{ alle_entiteiten | select('match', 'sensor\\..*_(battery_soc|batterij_soc|soc_batterie)(_\\d+)?$') | list }}"
+  laaddoel_lijst: !input charge_target
+  # Nog laden? Zonder laaddoel altijd; met laaddoel zolang een batterij eronder zit.
+  laden_nodig: >-
+    {{ laaddoel_lijst | count == 0
+       or soc_sensoren | map('states') | map('float', 0)
+          | select('<', states(laaddoel_lijst[0]) | float(100)) | list | count > 0 }}
   ontlaad_max: !input discharge_power_value
   handmatig: !input manual_automations
 
@@ -139,6 +165,14 @@ triggers:
   - trigger: homeassistant
     event: start
     id: herstart
+  # Laaddoel bereikt (of veranderd): direct opnieuw kijken in plaats van pas bij de volgende kwartiercontrole.
+  - trigger: template
+    value_template: >-
+      {% set soc = t_batterijen | map('device_entities') | sum(start=[])
+         | select('match', 'sensor\\..*_(battery_soc|batterij_soc|soc_batterie)(_\\d+)?$') | list %}
+      {{ t_laaddoel | count > 0 and soc | count > 0
+         and soc | map('states') | map('float', 0) | min >= states(t_laaddoel[0]) | float(101) }}
+    id: doel
 
 conditions:
   # Niet ingrijpen zolang je zelf laadt of ontlaadt met een andere automation.
@@ -169,6 +203,8 @@ actions:
           - condition: state
             entity_id: !input cheapest_block_sensor
             state: "on"
+          - condition: template
+            value_template: "{{ laden_nodig }}"
         sequence:
           - if:
               # Alleen iets doen als de batterijen nog niet geforceerd laden

@@ -1,11 +1,11 @@
 # Nieuwe automatisering → ⋮ → Bewerken in YAML → plak dit en vervang elke JOUW_… door je eigen entiteit.
 # Eén batterij? Haal de regels met JOUW_MARSTEK_2_… weg.
-# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-3-de-automation
+# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-5-de-automation
 alias: "Marstek - Slim op stroomprijs"
 description: >-
-  Goedkoopste uren van de dag: batterijen laden van het net.
-  Prijs onder de drempel: batterij ontlaadt niet (laadt nog wel op zonne-overschot).
-  Prijs boven de drempel: batterij levert stroom aan het huis (anti_feed).
+  Goedkoopste uren van de dag: batterijen laden van het net, tot het laaddoel.
+  Prijs onder de dynamische drempel: batterij ontlaadt niet (laadt nog wel op zonne-overschot).
+  Prijs op of boven de dynamische drempel: batterij levert stroom aan het huis (anti_feed).
 mode: queued
 max: 5
 triggers:
@@ -16,8 +16,18 @@ triggers:
     entity_id: sensor.zonneplan_current_electricity_tariff
     id: prijs
   - trigger: state
-    entity_id: input_number.batterij_prijsdrempel
+    entity_id:
+      - input_number.batterij_prijsdrempel
+      - sensor.batterij_dynamische_drempel
+      - sensor.batterij_laaddoel
     id: drempel
+  # Laaddoel bereikt: direct stoppen met laden van het net
+  - trigger: numeric_state
+    entity_id:
+      - sensor.JOUW_MARSTEK_1_SOC
+      - sensor.JOUW_MARSTEK_2_SOC
+    above: sensor.batterij_laaddoel
+    id: doel
   - trigger: time_pattern
     minutes: /15
     id: controle
@@ -33,12 +43,21 @@ actions:
       - delay:
           minutes: 2
   - choose:
-      # Stand 1: goedkoopste uren, geforceerd laden van het net
-      - alias: "Goedkoopste uren: laden van het net"
+      # Stand 1: goedkoopste uren, geforceerd laden van het net tot het laaddoel
+      - alias: "Goedkoopste uren: laden van het net tot laaddoel"
         conditions:
           - condition: state
             entity_id: binary_sensor.goedkoopste_2_uur_stroom
             state: "on"
+          # Minstens één batterij zit nog onder het laaddoel
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id: sensor.JOUW_MARSTEK_1_SOC
+                below: sensor.batterij_laaddoel
+              - condition: numeric_state
+                entity_id: sensor.JOUW_MARSTEK_2_SOC
+                below: sensor.batterij_laaddoel
         sequence:
           - if:
               # Alleen iets doen als de batterijen nog niet geforceerd laden
@@ -98,7 +117,7 @@ actions:
                     - switch.JOUW_MARSTEK_1_RS485
                     - switch.JOUW_MARSTEK_2_RS485
     default:
-      # Niet in het goedkoopste blok: eerst terug naar de normale stand (anti_feed)
+      # Niet in het goedkoopste blok, of laaddoel bereikt: eerst terug naar de normale stand (anti_feed)
       - alias: "Terug naar de normale stand"
         if:
           - condition: or
@@ -137,12 +156,12 @@ actions:
                 - switch.JOUW_MARSTEK_1_RS485
                 - switch.JOUW_MARSTEK_2_RS485
       - choose:
-          # Stand 2: goedkoop, de batterij spaart
+          # Stand 2: prijs onder de dynamische drempel, de batterij spaart
           - alias: "Goedkoop: net gebruiken, batterij niet ontladen"
             conditions:
               - condition: numeric_state
                 entity_id: sensor.zonneplan_current_electricity_tariff
-                below: input_number.batterij_prijsdrempel
+                below: sensor.batterij_dynamische_drempel
             sequence:
               - if:
                   - condition: or
