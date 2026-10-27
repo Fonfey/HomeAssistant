@@ -6,7 +6,7 @@ Everything from my Home Assistant blog posts on [fonferek.tech](https://fonferek
 
 | Topic | Folder | Blog post (Dutch) |
 |---|---|---|
-| Smart home battery charging 2.0: price threshold (recommended) | [`thuisbatterij-prijsdrempel/`](thuisbatterij-prijsdrempel/) | [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) |
+| Smart home battery charging 2.0 (recommended) | [`thuisbatterij-slim-laden-2.0/`](thuisbatterij-slim-laden-2.0/) | [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) |
 | Smart home battery charging, version 1 (blueprints) | [`thuisbatterij-blueprints/`](thuisbatterij-blueprints/) | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
 | Energy overview: real costs and savings with dynamic prices | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant: wat kosten stroom en gas echt?](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
 | Notifications: waste collection, water leak and low batteries | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |

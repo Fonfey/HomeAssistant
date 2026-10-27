@@ -6,7 +6,7 @@ Alles uit mijn Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/), 
 
 | Onderwerp | Map | Blog |
 |---|---|---|
-| Thuisbatterij slim laden 2.0: prijsdrempel (aanrader) | [`thuisbatterij-prijsdrempel/`](thuisbatterij-prijsdrempel/) | [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) |
+| Thuisbatterij slim laden 2.0 (aanrader) | [`thuisbatterij-slim-laden-2.0/`](thuisbatterij-slim-laden-2.0/) | [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) |
 | Thuisbatterij slim laden, versie 1 (blueprints) | [`thuisbatterij-blueprints/`](thuisbatterij-blueprints/) | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
 | Energie-overzicht: kosten en besparing | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant: wat kosten stroom en gas echt?](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
 | Meldingen: afval, waterlek en batterijen | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |
