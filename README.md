@@ -14,3 +14,9 @@ Alles uit mijn Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/), 
 | Philips Hue Tap Dial | [`hue-tap-dial/`](hue-tap-dial/) | [Hue Tap Dial in Home Assistant: één draaiknop voor meerdere lampen](https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/) |
 
 > Heb je de Marstek-blueprints al eerder geïmporteerd? Ze staan nu in de map `thuisbatterij-blueprints/`. **Opnieuw importeren** in Home Assistant werkt daardoor één keer niet; importeer ze dan via de knoppen in [`thuisbatterij-blueprints/`](thuisbatterij-blueprints/) en kies voor overschrijven. Daarna werkt opnieuw importeren weer gewoon.
+
+---
+
+## Bijdragen en licentie
+
+Vragen, bugs en verbeteringen zijn welkom; lees eerst [CONTRIBUTING.md](CONTRIBUTING.md). Dit project valt onder de [MIT-licentie](LICENSE).

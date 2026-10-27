@@ -1,0 +1,34 @@
+name: 💡 Idee of verbetering / Feature request
+description: Stel een nieuwe functie of verbetering voor. / Suggest a new feature or improvement.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: probleem
+    attributes:
+      label: Welk probleem wil je oplossen? / What problem are you trying to solve?
+      placeholder: "Ik wil de batterij ook laden als de stroomprijs negatief is, ook buiten het goedkoopste uur."
+    validations:
+      required: true
+
+  - type: textarea
+    id: oplossing
+    attributes:
+      label: Hoe zou je het willen oplossen? / Proposed solution
+      description: Bijvoorbeeld een nieuwe input in een blueprint, een nieuwe blueprint of een kaart in het dashboard.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatieven
+    attributes:
+      label: Alternatieven / Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: hulp
+    attributes:
+      label: Meehelpen / Contribute
+      options:
+        - label: Ik wil hier zelf een pull request voor maken. / I'd like to open a pull request for this.
+          required: false
