@@ -6,7 +6,8 @@ Everything from my Home Assistant blog posts on [fonferek.tech](https://fonferek
 
 | Topic | Folder | Blog post (Dutch) |
 |---|---|---|
-| Smart home battery charging (Marstek & Zonneplan) | [below](#home-battery-marstek--zonneplan), files in the root folder | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
+| Smart home battery charging 2.0: price threshold (recommended) | [`thuisbatterij-prijsdrempel/`](thuisbatterij-prijsdrempel/) | [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) |
+| Smart home battery charging, version 1 (blueprints) | [below](#home-battery-marstek--zonneplan), files in the root folder | [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/) |
 | Energy overview: real costs and savings with dynamic prices | [`energie-overzicht/`](energie-overzicht/) | [Een eerlijk energie-overzicht in Home Assistant: wat kosten stroom en gas echt?](https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/) |
 | Notifications: waste collection, water leak and low batteries | [`meldingen/`](meldingen/) | [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/) |
 | Wall tablet with Fully Kiosk and WallPanel | [`wandtablet/`](wandtablet/) | [Een wandtablet als Home Assistant-dashboard: Fully Kiosk, WallPanel en slim laden](https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/) |
@@ -17,6 +18,8 @@ Everything from my Home Assistant blog posts on [fonferek.tech](https://fonferek
 # Home battery: Marstek & Zonneplan
 
 Blueprints and a dashboard for Home Assistant to smartly charge and discharge a **Marstek Venus home battery** based on the **Zonneplan** electricity price.
+
+> 🆕 **There is a version 2.0** that works better: charge in the cheapest 2 hours and save the battery for the expensive hours, with one automation instead of the price blueprints. See [`thuisbatterij-prijsdrempel/`](thuisbatterij-prijsdrempel/) and the blog post [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/) (in Dutch). The *Opladen*, *Ontladen* and *Veiligheid* blueprints below can still be used alongside it.
 
 > 📖 Background on my blog (in Dutch): [Smart home battery charging with Home Assistant and Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/).
 
