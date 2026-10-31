@@ -1,5 +1,5 @@
 # Energie-overzicht: plak dit onder `views:` in de Raw-configuratie-editor van je dashboard.
-# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-3-het-dashboard
+# Uitleg: https://fonferek.nl/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-3-het-dashboard
   - title: Energie-overzicht
     path: energie-overzicht
     icon: mdi:cash-multiple

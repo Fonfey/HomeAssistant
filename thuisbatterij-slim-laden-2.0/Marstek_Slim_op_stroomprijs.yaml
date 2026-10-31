@@ -14,7 +14,7 @@ blueprint:
     Opdrachten gaan alleen naar de batterij als er echt iets moet veranderen.
 
     Je hebt minstens een **drempel** (getal-helper of sensor in €/kWh) en een **binaire sensor** nodig die aan is in het goedkoopste blok.
-    Uitleg en de sjablonen voor de sensoren: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/
+    Uitleg en de sjablonen voor de sensoren: https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/
   domain: automation
   author: Jeroen Fonferek
   source_url: https://github.com/Fonfey/HomeAssistant/blob/main/thuisbatterij-slim-laden-2.0/Marstek_Slim_op_stroomprijs.yaml

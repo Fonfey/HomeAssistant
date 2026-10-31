@@ -1,5 +1,5 @@
 # Optioneel: Kaart toevoegen → Handmatig → plak dit.
-# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-6-een-kaart-op-je-dashboard-optioneel
+# Uitleg: https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-6-een-kaart-op-je-dashboard-optioneel
 type: entities
 title: Thuisbatterij
 entities:

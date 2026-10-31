@@ -2,7 +2,7 @@
 
 # Bijdragen
 
-Leuk dat je wilt helpen! Dit project bevat de blueprints, automations en dashboards uit mijn Home Assistant-blogs op [fonferek.tech](https://fonferek.tech/), per onderwerp in een eigen map: de thuisbatterij (Marstek Venus en Zonneplan), het energie-overzicht, meldingen, de wandtablet en de Hue Tap Dial. Bijdragen in het Nederlands en in het Engels zijn allebei welkom.
+Leuk dat je wilt helpen! Dit project bevat de blueprints, automations en dashboards uit mijn Home Assistant-blogs op [fonferek.nl](https://fonferek.nl/), per onderwerp in een eigen map: de thuisbatterij (Marstek Venus en Zonneplan), het energie-overzicht, meldingen, de wandtablet en de Hue Tap Dial. Bijdragen in het Nederlands en in het Engels zijn allebei welkom.
 
 ## Een probleem melden
 

@@ -2,7 +2,7 @@
 
 Een Android-tablet aan de muur als dashboard, met een fotolijst als screensaver, pop-ups die vanzelf sluiten en een lader die alleen tussen 15% en 90% laadt.
 
-📖 **Uitleg, inclusief de instellingen van Fully Kiosk:** [Een wandtablet als Home Assistant-dashboard: Fully Kiosk, WallPanel en slim laden](https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/)
+📖 **Uitleg, inclusief de instellingen van Fully Kiosk:** [Een wandtablet als Home Assistant-dashboard: Fully Kiosk, WallPanel en slim laden](https://fonferek.nl/blog/wandtablet-dashboard-fully-kiosk-wallpanel/)
 
 | Bestand | Soort | Wat het doet |
 |---|---|---|

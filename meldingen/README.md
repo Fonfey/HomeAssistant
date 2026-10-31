@@ -1,6 +1,6 @@
 # Drie meldingen: afval, waterlek en lege batterijen
 
-📖 **Uitleg:** [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/)
+📖 **Uitleg:** [Drie meldingen die je echt helpen: afval, waterlek en lege batterijen](https://fonferek.nl/blog/home-assistant-meldingen-afval-waterlek-batterij/)
 
 | Bestand | Wat het doet |
 |---|---|

@@ -1,7 +1,7 @@
 # Wandtablet: zet dit op het hoogste niveau van je dashboardconfiguratie
 # (Bewerken → Raw configuration editor), boven `views:`. Vereist Kiosk Mode, WallPanel en Digital Clock (HACS).
 # Maak eerst de helper input_boolean.wallpanel_screensaver aan.
-# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/
+# Uitleg: https://fonferek.nl/blog/wandtablet-dashboard-fully-kiosk-wallpanel/
 kiosk_mode:
   hide_search: true
   hide_assistant: true

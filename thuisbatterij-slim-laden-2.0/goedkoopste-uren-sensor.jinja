@@ -1,5 +1,5 @@
 {#- Helper → Template → Binaire sensor "Goedkoopste 2 uur stroom": plak dit in het Statussjabloon.
-    Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-2-de-sensor-voor-de-goedkoopste-uren -#}
+    Uitleg: https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-2-de-sensor-voor-de-goedkoopste-uren -#}
 {% set uren = 2 %}
 {% set fc = state_attr('sensor.zonneplan_current_electricity_tariff', 'forecast') or [] %}
 {% set v = fc | selectattr('start_date', 'search', '^' ~ (now().date() | string)) | list %}

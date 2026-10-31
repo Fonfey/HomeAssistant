@@ -1,4 +1,4 @@
-# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/
+# Uitleg: https://fonferek.nl/blog/home-assistant-energie-overzicht-kosten-besparing/
 # Energie-overzicht: plak dit bestand ongewijzigd in packages/energie_overzicht.yaml
 # Je eigen sensoren stel je in bovenaan custom_templates/energie.jinja.
 template:

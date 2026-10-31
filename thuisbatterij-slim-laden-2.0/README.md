@@ -2,7 +2,7 @@
 
 De opvolger van de stroomprijs-blueprints: één automation die de Marstek-batterijen de hele dag op de Zonneplan-prijs laat letten. Met een **dynamische drempel** levert de batterij alleen in de duurste uren tot het volgende laadblok, en met een **laaddoel** laadt hij overdag niet verder dan nodig, zodat er ruimte blijft voor de zon.
 
-📖 **Volledige uitleg, stap voor stap:** [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/)
+📖 **Volledige uitleg, stap voor stap:** [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/)
 
 | Stand | Wanneer | Wat de batterij doet |
 |---|---|---|

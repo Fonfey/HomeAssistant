@@ -1,5 +1,5 @@
 # Nieuwe automatisering → ⋮ → Bewerken in YAML → plak dit. Vervang notify.mobile_app_JOUW_TELEFOON.
-# Uitleg: https://fonferek.tech/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-4-het-avondbericht
+# Uitleg: https://fonferek.nl/blog/home-assistant-energie-overzicht-kosten-besparing/#stap-4-het-avondbericht
 alias: "Notificatie: Energie-avondbericht"
 description: Dagelijkse samenvatting van stroom, gas, zon, batterij en besparing.
 mode: single
