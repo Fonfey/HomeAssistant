@@ -1,6 +1,6 @@
 # Script: Instellingen → Automatiseringen en scènes → Scripts → Script toevoegen → ⋮ → Bewerken in YAML.
 # Vervang <id van je tablet> door het apparaat-id van je tablet in de Fully Kiosk-integratie.
-# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#met-één-knop-naar-de-beveiligingsapp
+# Uitleg: https://fonferek.nl/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#met-één-knop-naar-de-beveiligingsapp
 alias: Wandtablet - Ajax-app openen
 sequence:
   - action: fully_kiosk.start_application

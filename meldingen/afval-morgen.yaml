@@ -1,4 +1,4 @@
-# Uitleg: https://fonferek.tech/blog/home-assistant-meldingen-afval-waterlek-batterij/
+# Uitleg: https://fonferek.nl/blog/home-assistant-meldingen-afval-waterlek-batterij/
 # Gebruikt de meldingsgroep notify.ik (zie de blog). Vervang de entiteiten door die van jezelf.
 alias: Melding - afval morgen
 triggers:

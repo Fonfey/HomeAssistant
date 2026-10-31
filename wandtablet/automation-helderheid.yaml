@@ -1,4 +1,4 @@
-# Uitleg: https://fonferek.tech/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#de-screensaver-aansturen-vanuit-home-assistant
+# Uitleg: https://fonferek.nl/blog/wandtablet-dashboard-fully-kiosk-wallpanel/#de-screensaver-aansturen-vanuit-home-assistant
 alias: Wandtablet - helderheid bij screensaver
 triggers:
   - trigger: state

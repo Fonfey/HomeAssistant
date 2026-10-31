@@ -4,9 +4,9 @@
 
 Blueprints en een dashboard voor Home Assistant om een **Marstek Venus thuisbatterij** slim te laden en ontladen op basis van de **Zonneplan**-stroomprijs.
 
-> 🆕 **Er is een versie 2.0** die beter werkt: laden in de goedkoopste 2 uur en sparen voor de dure uren, met één automation in plaats van de stroomprijs-blueprints. Zie [`thuisbatterij-slim-laden-2.0/`](../thuisbatterij-slim-laden-2.0/) en de blog [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/). De blueprints *Opladen*, *Ontladen* en *Veiligheid* hieronder kun je daarnaast blijven gebruiken.
+> 🆕 **Er is een versie 2.0** die beter werkt: laden in de goedkoopste 2 uur en sparen voor de dure uren, met één automation in plaats van de stroomprijs-blueprints. Zie [`thuisbatterij-slim-laden-2.0/`](../thuisbatterij-slim-laden-2.0/) en de blog [Thuisbatterij slim laden 2.0: goedkoop laden, sparen voor de dure uren](https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/). De blueprints *Opladen*, *Ontladen* en *Veiligheid* hieronder kun je daarnaast blijven gebruiken.
 
-> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.tech/blog/home-assistant-thuisbatterij-zonneplan-blueprints/).
+> 📖 Uitleg en achtergrond op mijn blog: [Thuisbatterij slim laden met Home Assistant en Zonneplan](https://fonferek.nl/blog/home-assistant-thuisbatterij-zonneplan-blueprints/).
 
 ![Energie-dashboard](EnergyDashboard.png)
 

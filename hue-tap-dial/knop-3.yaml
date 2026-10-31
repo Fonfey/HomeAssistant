@@ -1,4 +1,4 @@
-# Philips Hue Tap Dial: voorbeeld uit https://fonferek.tech/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/
+# Philips Hue Tap Dial: voorbeeld uit https://fonferek.nl/blog/hue-tap-dial-home-assistant-een-knop-voor-alles/
 # Vervang event.tap_dial_*, light.lamp_a, light.lamp_b en light.groep_c door je eigen entiteiten.
 # Nodig: input_select.tap_dial_groep (opties: Lamp A, Lamp B, Groep C) en input_text.lamp_a_scene / input_text.lamp_b_scene.
 alias: Tap Dial - knop 3 (scènes Lamp A)

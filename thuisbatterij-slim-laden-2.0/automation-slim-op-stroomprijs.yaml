@@ -1,6 +1,6 @@
 # Nieuwe automatisering → ⋮ → Bewerken in YAML → plak dit en vervang elke JOUW_… door je eigen entiteit.
 # Eén batterij? Haal de regels met JOUW_MARSTEK_2_… weg.
-# Uitleg: https://fonferek.tech/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-5-de-automation
+# Uitleg: https://fonferek.nl/blog/home-assistant-thuisbatterij-slim-laden-prijsdrempel/#stap-5-de-automation
 alias: "Marstek - Slim op stroomprijs"
 description: >-
   Goedkoopste uren van de dag: batterijen laden van het net, tot het laaddoel.
